@@ -1,0 +1,37 @@
+services:
+  altyysha:
+    image: php:8.1-apache
+    container_name: telegram-bot
+    restart: unless-stopped
+    volumes:
+      - ./bot:/var/www/html
+    environment:
+      - PHP_MEMORY_LIMIT=256M
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.altyysha.rule=Host(`bot.yourdomain.com`)
+      - traefik.http.routers.altyysha.entrypoints=websecure
+      - traefik.http.routers.altyysha.tls=true
+      - traefik.http.routers.altyysha.tls.certresolver=letsencrypt
+      - traefik.http.services.altyysha.loadbalancer.server.port=80
+
+  altyysha-local:
+    image: php:8.1-apache
+    container_name: telegram-bot-local
+    restart: unless-stopped
+    volumes:
+      - ./bot:/var/www/html
+    environment:
+      - PHP_MEMORY_LIMIT=256M
+    ports:
+      - "80:80"
+    networks:
+      - local
+
+networks:
+  web:
+    external: true
+  local:
+    driver: bridge
