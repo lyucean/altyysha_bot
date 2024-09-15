@@ -11,7 +11,7 @@ services:
       - web
     labels:
       - traefik.enable=true
-      - traefik.http.routers.altyysha.rule=Host(`bot.yourdomain.com`)
+      - traefik.http.routers.altyysha.rule=Host(`altyysha.com`)
       - traefik.http.routers.altyysha.entrypoints=websecure
       - traefik.http.routers.altyysha.tls=true
       - traefik.http.routers.altyysha.tls.certresolver=letsencrypt
