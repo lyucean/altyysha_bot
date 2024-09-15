@@ -1,7 +1,7 @@
 # Переменные
 COMPOSE_FILE := docker-compose.yml
 DOCKER_COMPOSE := docker compose -f $(COMPOSE_FILE)
-ENV_FILE := .env
+ENV_FILE := ./bot/.env
 ENVIRONMENT := $(shell grep ENVIRONMENT $(ENV_FILE) | cut -d '=' -f2)
 
 ifeq ($(ENVIRONMENT),development)
@@ -11,7 +11,7 @@ else
 endif
 
 # Цели
-.PHONY: help up down restart build logs ps clean update
+.PHONY: help up down restart build logs ps clean update bot
 
 # Показывать справку по умолчанию
 .DEFAULT_GOAL := help
@@ -44,3 +44,6 @@ update: down ## Обновить и перезапустить контейне�
 	git pull
 	$(DOCKER_COMPOSE) pull $(SERVICE)
 	$(DOCKER_COMPOSE) up -d --build --remove-orphans $(SERVICE)
+
+bot: ## Запустить PHP-скрипт бота в консоли контейнера
+	$(DOCKER_COMPOSE) exec $(SERVICE) php /var/www/html/bot_script.php
