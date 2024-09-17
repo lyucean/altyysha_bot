@@ -11,7 +11,7 @@ loadEnv(__DIR__ . '/.env');
 $token = getenv('YOUR_BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
 $allowed_user = 'lyucean';
-$allowed_commands = ['/start', '/end'];
+$allowed_commands = ['/start', '/end', '/stats'];
 
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
@@ -56,7 +56,7 @@ function sendMessage($chat_id, $text): void
 // Функция для обработки обновлений
 function handleUpdate($update): void
 {
-    global $token, $bot_name, $allowed_commands;
+    global $bot_name, $allowed_commands;
 
     logs(json_encode($update, JSON_UNESCAPED_UNICODE));
 
@@ -75,23 +75,38 @@ function handleUpdate($update): void
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id);
     }
-
     // Обработка только сообщений отправленных боту
-    if (!empty($message) || str_starts_with($message, $bot_name)) {
+    elseif (!empty($message) || str_starts_with($message, $bot_name)) {
         $message = trim(str_replace($bot_name, '', $message)); // Удаление имени бота
         // Обработка команд
         $response_text = message_processing($message, $username, $chat_id);
     }
+
+    $response_text = $response_text ?? '';
 
     // Логирование
     logs("Получено сообщение: $message");
     logs("Отправлен ответ: $response_text");
 }
 
+// Функция для получения статистики игры
+function getStats($gameState): string
+{
+    global $statsJokes;
+    if (empty($gameState['score'])) {
+        return "Счет пока 0:0:0. Даже футбольные матчи бывают интереснее! ⚽😅";
+    }
 
+    arsort($gameState['score']); // Сортируем игроков по очкам (по убыванию)
+    $stats = $statsJokes[array_rand($statsJokes)];
+    foreach ($gameState['score'] as $userId => $score) {
+        $stats .= "@" . $gameState['usernames'][$userId] . ": $score очков". PHP_EOL;
+    }
+    return $stats;
+}
 function command_processing($message, $username, $chat_id): string
 {
-    global $allowed_user, $emojiFactsAboutDasha;
+    global $allowed_user, $emojiFactsAboutDasha, $gameState;
     $username = $username ?? '';
     $message = $message ?? '';
 
@@ -101,20 +116,25 @@ function command_processing($message, $username, $chat_id): string
         if ($message == '/start') {
             $gameState['active'] = true;
             $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
-            sendMessage($chat_id, "Игра началась! Вот первая загадка: " . $gameState['current_emoji']);
+            $response_text = "Игра началась! Вот первая загадка: " . $gameState['current_emoji'];
             file_put_contents('game_state.json', json_encode($gameState));
         }
 
         // Команда для завершения игры
         elseif ($message == '/end') {
             $gameState['active'] = false;
-            sendMessage($chat_id, "Игра окончена. Спасибо за участие!");
+            $response_text ="Игра окончена. Спасибо за участие!";
             file_put_contents('game_state.json', json_encode($gameState));
         }
-
     } else {
         // Шутка для неразрешенных пользователей
         $response_text = "Эта команда только для VIP-персон. Твой статус пока что 'простой смертный'. 👑👨‍🦰";
+    }
+
+    // Команда для просмотра статистики
+    if ($message == '/stats') {
+        $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
+        $response_text = $stats;
     }
 
     $response_text = $response_text ?? $username . "У меня нет такой команды 😕";
