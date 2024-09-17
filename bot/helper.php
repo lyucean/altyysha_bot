@@ -22,3 +22,10 @@ function loadEnv($path) {
         }
     }
 }
+
+// Функция для отправки сообщений
+function logs($text)
+{
+//    print_r('<br> ' );
+    print_r(date('H:i:s:u ') . $text . PHP_EOL);
+}
