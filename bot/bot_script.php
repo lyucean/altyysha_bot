@@ -13,27 +13,30 @@ $token = getenv('YOUR_BOT_TOKEN');
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
 
 // Функция для отправки сообщений
-function logs($text) {
-    print_r('<br> '. date('H:i:s:u ') .$text . PHP_EOL);
+function logs($text)
+{
+//    print_r('<br> ' );
+    print_r(date('H:i:s:u ') . $text . PHP_EOL);
 }
 
 logs('Старт бота');
 
 // Функция для отправки сообщений
-function sendMessage($chat_id, $text) {
+function sendMessage($chat_id, $text)
+{
     global $token;
     file_get_contents("https://api.telegram.org/bot$token/sendMessage?chat_id=$chat_id&text=" . urlencode($text));
 }
+
 // Основной код
 if ($use_webhook) {
-    logs('Режим вебхука');
+    logs('Режим WebHook');
     // Режим вебхука
     $update = json_decode(file_get_contents('php://input'), true);
     handleUpdate($update);
 } else {
-    logs('поллинга');
+    logs('Режим Polling');
 
-    // Режим поллинга
     $offset = 0;
     while (true) {
         $updates = file_get_contents("https://api.telegram.org/bot$token/getUpdates?offset=$offset&limit=1");
@@ -51,7 +54,8 @@ if ($use_webhook) {
 }
 
 // Функция для обработки обновлений
-function handleUpdate($update) {
+function handleUpdate($update)
+{
     global $token;
 
     if (isset($update['message'])) {
@@ -65,7 +69,7 @@ function handleUpdate($update) {
         sendMessage($chat_id, $response_text);
 
         // Логирование
-        echo "Получено сообщение: $message_text\n";
-        echo "Отправлен ответ: $response_text\n";
+        logs("Получено сообщение: $message_text");
+        logs("Отправлен ответ: $response_text");
     }
 }
