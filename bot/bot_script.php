@@ -11,7 +11,7 @@ loadEnv(__DIR__ . '/.env');
 $token = getenv('YOUR_BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
 $allowed_user_id = getenv('ADMIN_USER_ID');
-$allowed_commands = ['/start', '/end', '/stats'];
+$allowed_commands = ['/start', '/end', '/stats', '/hint'];
 
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
@@ -58,9 +58,8 @@ function handleUpdate($update): void
 {
     global $bot_name, $allowed_commands;
 
-//    logs(print_r(json_encode($update, JSON_UNESCAPED_UNICODE), true));
-
-    print_r($update);
+    logs(print_r($update, JSON_UNESCAPED_UNICODE),);
+//    print_r($update);
 
     // Обработка текстовых сообщений
     $chat_id = $update['message']['chat']['id']; // ID чата
@@ -82,8 +81,7 @@ function handleUpdate($update): void
     if (in_array($message, $allowed_commands)) {
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id, $user_id);
-    }
-    // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
+    } // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
     elseif (!empty($message) &&
         (str_starts_with($message, $bot_name) ||
             isset($update['message']['reply_to_message']['from']['username'])
@@ -109,17 +107,25 @@ function getStats($gameState): string
     }
 
     arsort($gameState['score']); // Сортируем игроков по очкам (по убыванию)
-    $stats = $statsJokes[array_rand($statsJokes)] . "\n\n";
+    $stats = $statsJokes[array_rand($statsJokes)] . PHP_EOL. PHP_EOL;
     foreach ($gameState['score'] as $userId => $score) {
         $username = $gameState['usernames'][$userId] ?? 'Аноним';
-        $stats .= "$username: $score очков\n";
+        $stats .= "$username: $score очков" . PHP_EOL;
     }
     return $stats;
 }
 
+// Функция для получения подсказки
+function getHint($answer): string
+{
+    $words = explode(' ', $answer);
+    $randomWord = $words[array_rand($words)];
+    return mb_strtoupper(mb_substr($randomWord, 0, 1, 'UTF-8'), 'UTF-8');
+}
+
 function command_processing($message, $username, $chat_id, $user_id): string
 {
-    global $allowed_user_id, $emojiFactsAboutDasha, $gameState;
+    global $allowed_user_id, $emojiFactsAboutDasha, $gameState, $hintJokes;
     $username = $username ?? '';
     $message = $message ?? '';
 
@@ -146,6 +152,18 @@ function command_processing($message, $username, $chat_id, $user_id): string
     elseif ($message == '/stats') {
         $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
         $response_text = $stats;
+    } // Команда для получения подсказки
+    elseif ($message == '/hint' && $gameState['active']) {
+        $currentScore = updateScore($gameState, $user_id, -1, $username);
+        if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
+            $hint = getHint($emojiFactsAboutDasha[$gameState['current_emoji']]);
+            $joke = $hintJokes[array_rand($hintJokes)];
+            $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
+            file_put_contents('game_state.json', json_encode($gameState));
+        } else {
+            updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
+            $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
+        }
     }
 
     $response_text = $response_text ?? $username . "У меня нет такой команды 😕";
