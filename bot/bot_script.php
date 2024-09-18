@@ -10,7 +10,7 @@ loadEnv(__DIR__ . '/.env');
 // Получение токена из переменных окружения
 $token = getenv('YOUR_BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
-$allowed_user = 'lyucean';
+$allowed_user_id = getenv('ADMIN_USER_ID');
 $allowed_commands = ['/start', '/end', '/stats'];
 
 // Конфигурация
@@ -68,16 +68,20 @@ function handleUpdate($update): void
         return;
     }
     $message = $update['message']['text']; // Текст сообщения
-    $username = $update['message']['from']['username'] ?? '';
     $user_id = $update['message']['from']['id'];
+    $first_name = $update['message']['from']['first_name'] ?? '';
+    $last_name = $update['message']['from']['last_name'] ?? '';
+    $username = $first_name . ($last_name ? ' ' . $last_name : '');
+    if (empty($username)) {
+        $username = $update['message']['from']['username'] ?? 'Аноним ';
+    }
 
     // Проверка на разрешенные команды
     if (in_array($message, $allowed_commands)) {
         // Обработка команд
-        $response_text = command_processing($message, $username, $chat_id);
-    }
-    // Обработка только сообщений отправленных боту
-    elseif (!empty($message) || str_starts_with($message, $bot_name)) {
+        $response_text = command_processing($message, $username, $chat_id, $user_id);
+    } // Обработка только сообщений отправленных боту
+    elseif (!empty($message) && str_starts_with($message, $bot_name)) {
         $message = trim(str_replace($bot_name, '', $message)); // Удаление имени бота
         // Обработка команд
         $response_text = message_processing($message, $username, $chat_id, $user_id);
@@ -95,45 +99,45 @@ function getStats($gameState): string
 {
     global $statsJokes;
     if (empty($gameState['score'])) {
-        return "Счет пока 0:0:0. Даже футбольные матчи бывают интереснее! ⚽😅";
+        return "Счет пока 0:0. Даже футбольные матчи бывают интереснее! ⚽😅";
     }
 
     arsort($gameState['score']); // Сортируем игроков по очкам (по убыванию)
-    $stats = $statsJokes[array_rand($statsJokes)];
+    $stats = $statsJokes[array_rand($statsJokes)] . "\n\n";
     foreach ($gameState['score'] as $userId => $score) {
-        $stats .= "@" . $gameState['usernames'][$userId] . ": $score очков". PHP_EOL;
+        $username = $gameState['usernames'][$userId] ?? 'Аноним';
+        $stats .= "$username: $score очков\n";
     }
     return $stats;
 }
-function command_processing($message, $username, $chat_id): string
+
+function command_processing($message, $username, $chat_id, $user_id): string
 {
-    global $allowed_user, $emojiFactsAboutDasha, $gameState;
+    global $allowed_user_id, $emojiFactsAboutDasha, $gameState;
     $username = $username ?? '';
     $message = $message ?? '';
 
-    if ($username === $allowed_user) { // Обработка команд для разрешенного пользователя
-
-        // Команда для начала игры
-        if ($message == '/start') {
+    // Команда для начала игры
+    if ($message == '/start') {
+        if ($user_id === (int)$allowed_user_id) { // Шутка для неразрешенных пользователей
             $gameState['active'] = true;
             $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
             $response_text = "Игра началась! Вот первая загадка: " . $gameState['current_emoji'];
             file_put_contents('game_state.json', json_encode($gameState));
+        } else {
+            $response_text = "Эта команда только для VIP-персон. Твой статус пока что 'простой смертный'. 👑👨‍🦰";
         }
-
-        // Команда для завершения игры
-        elseif ($message == '/end') {
+    } // Команда для завершения игры
+    elseif ($message == '/end') {
+        if ($user_id === (int)$allowed_user_id) { // Шутка для неразрешенных пользователей
             $gameState['active'] = false;
-            $response_text ="Игра окончена. Спасибо за участие!";
+            $response_text = "Игра окончена. Спасибо за участие!";
             file_put_contents('game_state.json', json_encode($gameState));
+        } else {
+            $response_text = "Извини, но твой уровень доступа слишком низкий. Попробуй подрасти! 📏😄";
         }
-    } else {
-        // Шутка для неразрешенных пользователей
-        $response_text = "Эта команда только для VIP-персон. Твой статус пока что 'простой смертный'. 👑👨‍🦰";
-    }
-
-    // Команда для просмотра статистики
-    if ($message == '/stats') {
+    } // Команда для просмотра статистики
+    elseif ($message == '/stats') {
         $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
         $response_text = $stats;
     }
@@ -147,9 +151,11 @@ function command_processing($message, $username, $chat_id): string
 }
 
 // Функция для обновления счета игрока
-function updateScore(&$gameState, $userId, $points) {
+function updateScore(&$gameState, $userId, $points, $username)
+{
     if (!isset($gameState['score'][$userId])) {
         $gameState['score'][$userId] = 0;
+        $gameState['usernames'][$userId] = $username;
     }
     $gameState['score'][$userId] += $points;
     return $gameState['score'][$userId];
@@ -170,7 +176,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
 
     // Если ответ полностью правильный
     if ($userAnswer == $correctAnswer) {
-        $currentScore = updateScore($gameState, $user_id, 5);
+        $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
         $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
 
@@ -187,7 +193,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
 
         if (!empty($correctGuessedWords)) {
             $points = count($correctGuessedWords) * 2;
-            $currentScore = updateScore($gameState, $user_id, $points);
+            $currentScore = updateScore($gameState, $user_id, $points, $username);
             $guessedWordsStr = implode(', ', $correctGuessedWords);
             $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
 
