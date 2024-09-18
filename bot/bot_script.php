@@ -206,26 +206,42 @@ function message_processing($message, $username, $chat_id, $user_id): string
         return 'Игра ещё не началась!🥲';
     }
 
-    // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
-    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8');
-    $userAnswer = mb_strtolower($message, 'UTF-8');
+    // Инициализация массива отгаданных загадок, если его еще нет
+    if (!isset($gameState['solved_riddles'])) {
+        $gameState['solved_riddles'] = [];
+    }
 
     // Инициализация массива угаданных слов, если его еще нет
     if (!isset($gameState['guessed_words'])) {
         $gameState['guessed_words'] = [];
     }
 
+    // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
+    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8');
+    $userAnswer = mb_strtolower($message, 'UTF-8');
+
     // Проверка на полное совпадение ответа
     if ($userAnswer == $correctAnswer) {
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
-        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL . PHP_EOL;
+        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
 
-        // Выбор новой эмодзи-загадки и сброс угаданных слов
-        $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
+        // Добавляем текущую загадку в список решенных
+        $gameState['solved_riddles'][] = $gameState['current_emoji'];
+
+        // Выбираем новую загадку из нерешенных
+        $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
+
+        if (empty($unsolved_riddles)) {
+            // Если все загадки решены, сбрасываем список решенных загадок
+            $gameState['solved_riddles'] = [];
+            $unsolved_riddles = array_keys($emojiFactsAboutDasha);
+        }
+
+        $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
         $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
-        $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
+        $response_text .= PHP_EOL . "Следующая загадка: " . $gameState['current_emoji'];
     } else {
         // Разбиение ответов на слова
         $words = explode(' ', $correctAnswer);
@@ -243,10 +259,34 @@ function message_processing($message, $username, $chat_id, $user_id): string
             $currentScore = updateScore($gameState, $user_id, $points, $username);
             $guessedWordsStr = implode(', ', $newGuessedWords);
             $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
+            $response_text = "@$username, $joke " . PHP_EOL . "Ты угадал(а) слова: $guessedWordsStr. "
+                . PHP_EOL . "Получаешь $points балла(ов)! "
+                . PHP_EOL . "Твой счет: $currentScore" . PHP_EOL;
 
-            // Добавление новых угаданных слов в список
             $gameState['guessed_words'] = array_merge($gameState['guessed_words'], $newGuessedWords);
-            $response_text = "@$username, $joke Ты угадал новое слово(а): $guessedWordsStr. Получаешь $points балла(ов)! Твой счет: $currentScore. Но полный ответ другой, попробуй еще!";
+
+            // Проверяем, все ли слова отгаданы
+            if (count($gameState['guessed_words']) == count($words)) {
+                // Все слова отгаданы, считаем загадку полностью разгаданной
+                $gameState['solved_riddles'][] = $gameState['current_emoji'];
+                $response_text .= "Поздравляю! Ты полностью разгадал(а) загадку: Даша \"$correctAnswer\"." . PHP_EOL;
+
+                // Выбираем новую загадку из нерешенных
+                $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
+
+                if (empty($unsolved_riddles)) {
+                    // Если все загадки решены, сбрасываем список решенных загадок
+                    $gameState['solved_riddles'] = [];
+                    $unsolved_riddles = array_keys($emojiFactsAboutDasha);
+                }
+
+                $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
+                $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
+                $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
+            } else {
+                $response_text .= "Продолжай угадывать!💪🏻"
+                    . PHP_EOL . "Еще есть не отгаданные слова 😜";
+            }
         } else {
             // Если новых угаданных слов нет
             $joke = $wrongGuessJokes[array_rand($wrongGuessJokes)];
