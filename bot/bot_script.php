@@ -69,6 +69,7 @@ function handleUpdate($update): void
     }
     $message = $update['message']['text']; // Текст сообщения
     $username = $update['message']['from']['username'] ?? '';
+    $user_id = $update['message']['from']['id'];
 
     // Проверка на разрешенные команды
     if (in_array($message, $allowed_commands)) {
@@ -79,7 +80,7 @@ function handleUpdate($update): void
     elseif (!empty($message) || str_starts_with($message, $bot_name)) {
         $message = trim(str_replace($bot_name, '', $message)); // Удаление имени бота
         // Обработка команд
-        $response_text = message_processing($message, $username, $chat_id);
+        $response_text = message_processing($message, $username, $chat_id, $user_id);
     }
 
     $response_text = $response_text ?? '';
@@ -145,10 +146,58 @@ function command_processing($message, $username, $chat_id): string
     return $response_text;
 }
 
-function message_processing($message, $username, $chat_id): string
-{
+// Функция для обновления счета игрока
+function updateScore(&$gameState, $userId, $points) {
+    if (!isset($gameState['score'][$userId])) {
+        $gameState['score'][$userId] = 0;
+    }
+    $gameState['score'][$userId] += $points;
+    return $gameState['score'][$userId];
+}
 
-    $response_text = $response_text ?? $username . ' Я вас не понимаю 😕';
+function message_processing($message, $username, $chat_id, $user_id): string
+{
+    // Обработка ответов игроков
+    global $gameState, $emojiFactsAboutDasha, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes;
+    $username = $username ?? '';
+    $message = $message ?? '';
+    if (!$gameState['active']) { // Если игра ещё не началась
+        return 'Игра ещё не началась!🥲';
+    }
+
+    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8'); // Загаданное слово
+    $userAnswer = mb_strtolower($message, 'UTF-8'); // Пользовательский ответ
+
+    // Если ответ полностью правильный
+    if ($userAnswer == $correctAnswer) {
+        $currentScore = updateScore($gameState, $user_id, 5);
+        $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
+        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
+
+        // Выбираем новую эмодзи-загадку
+        $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
+        $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
+
+        file_put_contents('game_state.json', json_encode($gameState));
+    } else {
+        // Проверяем, угадал ли игрок хотя бы одно слово
+        $words = explode(' ', $correctAnswer);
+        $userWords = explode(' ', $userAnswer);
+        $correctGuessedWords = array_intersect($words, $userWords);
+
+        if (!empty($correctGuessedWords)) {
+            $points = count($correctGuessedWords) * 2;
+            $currentScore = updateScore($gameState, $user_id, $points);
+            $guessedWordsStr = implode(', ', $correctGuessedWords);
+            $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
+
+            $response_text = "@$username, $joke Ты угадал слово(а): $guessedWordsStr. Получаешь $points балла(ов)! Твой счет: $currentScore. Но полный ответ другой, попробуй еще!";
+            file_put_contents('game_state.json', json_encode($gameState));
+        } else {
+            $joke = $wrongGuessJokes[array_rand($wrongGuessJokes)];
+            $response_text = "@$username, $joke Попробуй еще раз!";
+        }
+    }
 
     // Отправка ответа
     sendMessage($chat_id, $response_text);
