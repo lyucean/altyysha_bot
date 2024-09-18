@@ -18,6 +18,11 @@ $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true д�
 
 // Загружаем текущее состояние игры
 $gameState = json_decode(file_get_contents('game_state.json'), true);
+// В начале скрипта, где инициализируется $gameState
+if (!isset($gameState['current_sentence'])) {
+    $gameState['current_sentence'] = ''; // Текущая загадка
+    $gameState['guessed_words'] = []; // Угаданные слова
+}
 
 logs('Старт бота');
 
@@ -123,6 +128,7 @@ function getHint($answer): string
     return mb_strtoupper(mb_substr($randomWord, 0, 1, 'UTF-8'), 'UTF-8');
 }
 
+// Обработка команд
 function command_processing($message, $username, $chat_id, $user_id): string
 {
     global $allowed_user_id, $emojiFactsAboutDasha, $gameState, $hintJokes;
@@ -175,62 +181,86 @@ function command_processing($message, $username, $chat_id, $user_id): string
 }
 
 // Функция для обновления счета игрока
-function updateScore(&$gameState, $userId, $points, $username)
-{
+function updateScore(&$gameState, $userId, $points, $username) {
     if (!isset($gameState['score'][$userId])) {
         $gameState['score'][$userId] = 0;
         $gameState['usernames'][$userId] = $username;
     }
     $gameState['score'][$userId] += $points;
+
+    // Сохраняем обновленное состояние игры
+    file_put_contents('game_state.json', json_encode($gameState));
+
     return $gameState['score'][$userId];
 }
 
+// Обработка обычных сообщений
 function message_processing($message, $username, $chat_id, $user_id): string
 {
-    // Обработка ответов игроков
     global $gameState, $emojiFactsAboutDasha, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes;
     $username = $username ?? '';
     $message = $message ?? '';
-    if (!$gameState['active']) { // Если игра ещё не началась
+
+    // Проверка, активна ли игра
+    if (!$gameState['active']) {
         return 'Игра ещё не началась!🥲';
     }
 
-    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8'); // Загаданное слово
-    $userAnswer = mb_strtolower($message, 'UTF-8'); // Пользовательский ответ
+    // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
+    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8');
+    $userAnswer = mb_strtolower($message, 'UTF-8');
 
-    // Если ответ полностью правильный
+    // Инициализация массива угаданных слов, если его еще нет
+    if (!isset($gameState['guessed_words'])) {
+        $gameState['guessed_words'] = [];
+    }
+
+    // Проверка на полное совпадение ответа
     if ($userAnswer == $correctAnswer) {
+        // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
-        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
+        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL . PHP_EOL;
 
-        // Выбираем новую эмодзи-загадку
+        // Выбор новой эмодзи-загадки и сброс угаданных слов
         $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
+        $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
         $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
-
-        file_put_contents('game_state.json', json_encode($gameState));
     } else {
-        // Проверяем, угадал ли игрок хотя бы одно слово
+        // Разбиение ответов на слова
         $words = explode(' ', $correctAnswer);
         $userWords = explode(' ', $userAnswer);
+
+        // Нахождение правильно угаданных слов
         $correctGuessedWords = array_intersect($words, $userWords);
 
-        if (!empty($correctGuessedWords)) {
-            $points = count($correctGuessedWords) * 2;
+        // Определение новых угаданных слов
+        $newGuessedWords = array_diff($correctGuessedWords, $gameState['guessed_words']);
+
+        if (!empty($newGuessedWords)) {
+            // Подсчет очков за новые угаданные слова
+            $points = count($newGuessedWords) * 2;
             $currentScore = updateScore($gameState, $user_id, $points, $username);
-            $guessedWordsStr = implode(', ', $correctGuessedWords);
+            $guessedWordsStr = implode(', ', $newGuessedWords);
             $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
 
-            $response_text = "@$username, $joke Ты угадал слово(а): $guessedWordsStr. Получаешь $points балла(ов)! Твой счет: $currentScore. Но полный ответ другой, попробуй еще!";
-            file_put_contents('game_state.json', json_encode($gameState));
+            // Добавление новых угаданных слов в список
+            $gameState['guessed_words'] = array_merge($gameState['guessed_words'], $newGuessedWords);
+            $response_text = "@$username, $joke Ты угадал новое слово(а): $guessedWordsStr. Получаешь $points балла(ов)! Твой счет: $currentScore. Но полный ответ другой, попробуй еще!";
         } else {
+            // Если новых угаданных слов нет
             $joke = $wrongGuessJokes[array_rand($wrongGuessJokes)];
-            $response_text = "@$username, $joke Попробуй еще раз!";
+            $response_text = "@$username, $joke " . PHP_EOL . "Попробуй еще раз!";
         }
     }
 
-    // Отправка ответа
+    // Сохранение обновленного состояния игры
+    file_put_contents('game_state.json', json_encode($gameState));
+
+    // Отправка ответа пользователю
     sendMessage($chat_id, $response_text);
 
     return $response_text;
 }
+
+
