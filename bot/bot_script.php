@@ -58,7 +58,9 @@ function handleUpdate($update): void
 {
     global $bot_name, $allowed_commands;
 
-    logs(json_encode($update, JSON_UNESCAPED_UNICODE));
+//    logs(print_r(json_encode($update, JSON_UNESCAPED_UNICODE), true));
+
+    print_r($update);
 
     // Обработка текстовых сообщений
     $chat_id = $update['message']['chat']['id']; // ID чата
@@ -80,8 +82,12 @@ function handleUpdate($update): void
     if (in_array($message, $allowed_commands)) {
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id, $user_id);
-    } // Обработка только сообщений отправленных боту
-    elseif (!empty($message) && str_starts_with($message, $bot_name)) {
+    }
+    // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
+    elseif (!empty($message) &&
+        (str_starts_with($message, $bot_name) ||
+            isset($update['message']['reply_to_message']['from']['username'])
+            && $update['message']['reply_to_message']['from']['username'] === strtolower(trim($bot_name, '@')))) {
         $message = trim(str_replace($bot_name, '', $message)); // Удаление имени бота
         // Обработка команд
         $response_text = message_processing($message, $username, $chat_id, $user_id);
