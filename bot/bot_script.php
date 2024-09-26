@@ -10,8 +10,8 @@ loadEnv(__DIR__ . '/.env');
 // Получение токена из переменных окружения
 $token = getenv('YOUR_BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
-$allowed_user_id = getenv('ADMIN_USER_ID');
-$allowed_commands = ['/start', '/end', '/stats', '/hint'];
+$allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
+$allowed_commands = ['/start', '/end', '/stats', '/hint']; // Массив разрешенных команд
 
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
@@ -76,10 +76,9 @@ function sendMessage($chat_id, $text): void
 // Функция для обработки обновлений
 function handleUpdate($update): void
 {
-    global $bot_name, $allowed_commands;
+    global $bot_name;
 
     logs(print_r($update, JSON_UNESCAPED_UNICODE),);
-//    print_r($update);
 
     // Обработка текстовых сообщений
     $chat_id = $update['message']['chat']['id']; // ID чата
@@ -97,8 +96,7 @@ function handleUpdate($update): void
         $username = $update['message']['from']['username'] ?? 'Аноним ';
     }
 
-    // Проверка на разрешенные команды
-    if (in_array($message, $allowed_commands)) {
+    if (isAllowedCommand($message)) { // Проверка на разрешенные команды
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id, $user_id);
     } // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
@@ -150,6 +148,35 @@ function getHint($answer): string
     return mb_strtoupper(mb_substr($randomWord, 0, 1, 'UTF-8'), 'UTF-8');
 }
 
+// функция проверки разрешенных команд
+function isAllowedCommand($message): bool
+{
+    global $allowed_commands;
+
+    // Удаляем @username_bot из сообщения, если оно есть
+    $command = preg_replace('/@\w+bot$/', '', $message);
+
+    // Проверяем, начинается ли сообщение с одной из разрешенных команд
+    foreach ($allowed_commands as $allowed_command) {
+        if (str_starts_with($command, $allowed_command)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Функция извлечения команды
+function extractCommand($message): string
+{
+    // Удаляем @username_bot из сообщения, если оно есть
+    $command = preg_replace('/@\w+bot$/', '', $message);
+
+    // Извлекаем первое слово (команду) из сообщения
+    $parts = explode(' ', $command, 2);
+    return strtolower($parts[0]);
+}
+
 // Обработка команд
 function command_processing($message, $username, $chat_id, $user_id): string
 {
@@ -157,8 +184,10 @@ function command_processing($message, $username, $chat_id, $user_id): string
     $username = $username ?? '';
     $message = $message ?? '';
 
+    $command = extractCommand($message);
+
     // Команда для начала игры
-    if ($message == '/start') {
+    if ($command == '/start') {
         if ($user_id === (int)$allowed_user_id) {
             $gameState = [
                 'active' => true,
@@ -174,7 +203,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
             $response_text = "Эта команда только для VIP-персон. Твой статус пока что 'простой смертный'. 👑👨‍🦰";
         }
     } // Команда для завершения игры
-    elseif ($message == '/end') {
+    elseif ($command == '/end') {
         if ($user_id === (int)$allowed_user_id) { // Шутка для неразрешенных пользователей
             $gameState['active'] = false;
             $response_text = "Игра окончена. Спасибо за участие!";
@@ -183,11 +212,11 @@ function command_processing($message, $username, $chat_id, $user_id): string
             $response_text = "Извини, но твой уровень доступа слишком низкий. Попробуй подрасти! 📏😄";
         }
     } // Команда для просмотра статистики
-    elseif ($message == '/stats') {
+    elseif ($command == '/stats') {
         $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
         $response_text = $stats;
     } // Команда для получения подсказки
-    elseif ($message == '/hint' && $gameState['active']) {
+    elseif ($command == '/hint' && $gameState['active']) {
         $currentScore = updateScore($gameState, $user_id, -1, $username);
         if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
             $hint = getHint($emojiFactsAboutDasha[$gameState['current_emoji']]);
