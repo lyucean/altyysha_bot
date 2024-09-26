@@ -8,7 +8,7 @@ require_once __DIR__ . '/dictionaries.php';
 loadEnv(__DIR__ . '/.env');
 
 // Получение токена из переменных окружения
-$token = getenv('YOUR_BOT_TOKEN');
+$token = getenv('BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
 $allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
 $allowed_commands = ['/start', '/end', '/stats', '/hint']; // Массив разрешенных команд

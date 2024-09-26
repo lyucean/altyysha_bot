@@ -51,6 +51,17 @@ jobs:
             docker compose up -d
             docker compose ps
 
+      - name: Run init.php
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /var/www/altyysha.com/
+            docker compose exec altyysha php /var/www/html/init.php
+
   test:
     runs-on: ubuntu-latest
     needs: [publish]

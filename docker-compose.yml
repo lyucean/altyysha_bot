@@ -1,7 +1,7 @@
 services:
   altyysha:
     image: php:8.1-apache
-    container_name: telegram-bot
+    container_name: altyysha-bot
     restart: unless-stopped
     volumes:
       - ./bot:/var/www/html
@@ -19,7 +19,7 @@ services:
 
   altyysha-local:
     image: php:8.1-apache
-    container_name: telegram-bot-local
+    container_name: altyysha-bot-local
     restart: unless-stopped
     volumes:
       - ./bot:/var/www/html
