@@ -106,19 +106,26 @@ function handleUpdate($update): void
 // Функция для получения статистики игры
 function getStats($gameState): string
 {
-    global $statsJokes;
+    global $statsJokes, $emojiFactsAboutDasha;
+
+    $totalRiddles = count($emojiFactsAboutDasha);
+    $solvedRiddles = isset($gameState['solved_riddles']) ? count($gameState['solved_riddles']) : 0;
+
+    $stats = $statsJokes[array_rand($statsJokes)] . PHP_EOL . PHP_EOL;
+    $stats .= "Отгадано загадок: $solvedRiddles из $totalRiddles" . PHP_EOL . PHP_EOL;
+
     if (empty($gameState['score'])) {
-        return "Счет пока 0:0. Даже футбольные матчи бывают интереснее! ⚽😅";
+        return $stats . "Счет пока 0:0. Даже футбольные матчи бывают интереснее! ⚽😅";
     }
 
     arsort($gameState['score']); // Сортируем игроков по очкам (по убыванию)
-    $stats = $statsJokes[array_rand($statsJokes)] . PHP_EOL. PHP_EOL;
     foreach ($gameState['score'] as $userId => $score) {
         $username = $gameState['usernames'][$userId] ?? 'Аноним';
         $stats .= "$username: $score очков" . PHP_EOL;
     }
     return $stats;
 }
+
 
 // Функция для получения подсказки
 function getHint($answer): string
