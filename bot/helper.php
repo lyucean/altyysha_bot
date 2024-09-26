@@ -1,13 +1,14 @@
 <?php
 
-function loadEnv($path) {
+function loadEnv($path): void
+{
     if(!file_exists($path)) {
         throw new Exception(".env file not found");
     }
 
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) {
+        if (str_starts_with(trim($line), '#')) {
             continue;
         }
 
@@ -24,7 +25,7 @@ function loadEnv($path) {
 }
 
 // Функция для отправки сообщений
-function logs($text)
+function logs($text): void
 {
 //    print_r('<br> ' );
     print_r(date('H:i:s:u ') . $text . PHP_EOL);
