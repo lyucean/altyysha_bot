@@ -11,8 +11,9 @@ loadEnv(__DIR__ . '/.env');
 $token = getenv('BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
 $allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
-$allowed_commands = ['/start', '/end', '/stats', '/hint']; // Массив разрешенных команд
-
+$allowed_commands = ['/stats', '/hint']; // Массив разрешенных команд
+$admin_commands = ['/start', '/end', '/add', '/delete', '/list'];  // Массив разрешенных команд для админа
+$riddles = loadRiddles(); // Загрузка загадок из JSON-файла
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
 
@@ -101,7 +102,7 @@ function handleUpdate($update): void
         $username = $update['message']['from']['username'] ?? 'Аноним ';
     }
 
-    if (isAllowedCommand($message)) { // Проверка на разрешенные команды
+    if (isAllowedCommand($message, $user_id)) { // Проверка на разрешенные команды
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id, $user_id);
     } // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
@@ -124,9 +125,9 @@ function handleUpdate($update): void
 // Функция для получения статистики игры
 function getStats($gameState): string
 {
-    global $statsJokes, $emojiFactsAboutDasha;
+    global $statsJokes, $riddles;
 
-    $totalRiddles = count($emojiFactsAboutDasha);
+    $totalRiddles = count($riddles);
     $solvedRiddles = isset($gameState['solved_riddles']) ? count($gameState['solved_riddles']) : 0;
 
     $stats = $statsJokes[array_rand($statsJokes)] . PHP_EOL . PHP_EOL;
@@ -154,22 +155,30 @@ function getHint($answer): string
 }
 
 // функция проверки разрешенных команд
-function isAllowedCommand($message): bool
+function isAllowedCommand($message, $user_id): bool
 {
-    global $allowed_commands;
+    global $allowed_commands, $admin_commands, $allowed_user_id;
 
     // Удаляем @username_bot из сообщения, если оно есть
     $command = preg_replace('/@\w+bot$/', '', $message);
 
-    // Проверяем, начинается ли сообщение с одной из разрешенных команд
-    foreach ($allowed_commands as $allowed_command) {
-        if (str_starts_with($command, $allowed_command)) {
-            return true;
-        }
+    // Разделяем сообщение на команду и аргументы
+    $parts = explode(' ', $command, 2);
+    $command = strtolower($parts[0]);
+
+    // Проверяем, является ли команда разрешенной для всех пользователей
+    if (in_array($command, $allowed_commands)) {
+        return true;
+    }
+
+    // Проверяем команды, доступные только для администратора
+    if ($user_id === (int)$allowed_user_id && in_array($command, $admin_commands)) {
+        return true;
     }
 
     return false;
 }
+
 
 // Функция извлечения команды
 function extractCommand($message): string
@@ -185,46 +194,23 @@ function extractCommand($message): string
 // Обработка команд
 function command_processing($message, $username, $chat_id, $user_id): string
 {
-    global $allowed_user_id, $emojiFactsAboutDasha, $gameState, $hintJokes;
+    global $riddles, $gameState, $hintJokes;
     $username = $username ?? '';
     $message = $message ?? '';
 
     $command = extractCommand($message);
 
-    // Команда для начала игры
-    if ($command == '/start') {
-        if ($user_id === (int)$allowed_user_id) {
-            $gameState = [
-                'active' => true,
-                'current_emoji' => array_rand($emojiFactsAboutDasha),
-                'solved_riddles' => [],
-                'guessed_words' => [],
-                'score' => [],
-                'usernames' => []
-            ];
-            $response_text = "Игра началась! Вот первая загадка: " . $gameState['current_emoji'];
-            file_put_contents('game_state.json', json_encode($gameState));
-        } else {
-            $response_text = "Эта команда только для VIP-персон. Твой статус пока что 'простой смертный'. 👑👨‍🦰";
-        }
-    } // Команда для завершения игры
-    elseif ($command == '/end') {
-        if ($user_id === (int)$allowed_user_id) { // Шутка для неразрешенных пользователей
-            $gameState['active'] = false;
-            $response_text = "Игра окончена. Спасибо за участие!";
-            file_put_contents('game_state.json', json_encode($gameState));
-        } else {
-            $response_text = "Извини, но твой уровень доступа слишком низкий. Попробуй подрасти! 📏😄";
-        }
-    } // Команда для просмотра статистики
-    elseif ($command == '/stats') {
+    // Команда для просмотра статистики
+    if ($command == '/stats') {
         $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
         $response_text = $stats;
-    } // Команда для получения подсказки
+    }
+
+    // Команда для получения подсказки
     elseif ($command == '/hint' && $gameState['active']) {
         $currentScore = updateScore($gameState, $user_id, -1, $username);
         if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
-            $hint = getHint($emojiFactsAboutDasha[$gameState['current_emoji']]);
+            $hint = getHint($riddles[$gameState['current_emoji']]);
             $joke = $hintJokes[array_rand($hintJokes)];
             $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
             file_put_contents('game_state.json', json_encode($gameState));
@@ -234,7 +220,79 @@ function command_processing($message, $username, $chat_id, $user_id): string
         }
     }
 
-    $response_text = $response_text ?? $username  . PHP_EOL . " У меня нет такой команды 😕";
+    // Команда для начала игры
+    elseif ($command == '/start') {
+
+        if (empty($riddles)) {
+            return "Извините, но список загадок пуст. Игру невозможно начать. Пожалуйста, добавьте загадки с помощью команды /add";
+        }
+
+        if ($gameState['active'] === 'active') {
+            return "Игра уже идет! Используйте /end, чтобы закончить текущую игру.";
+        }
+
+        $gameState = [
+            'active' => true,
+            'current_emoji' => array_rand($riddles),
+            'solved_riddles' => [],
+            'guessed_words' => [],
+            'score' => [],
+            'usernames' => []
+        ];
+
+        $response_text = "Игра началась! " . PHP_EOL . "Вот первая загадка: " . $gameState['current_emoji'];
+        file_put_contents('game_state.json', json_encode($gameState));
+    }
+
+    // Команда для завершения игры
+    elseif ($command == '/end') {
+        $gameState['active'] = false;
+        $response_text = "Игра окончена. Спасибо за участие!";
+        file_put_contents('game_state.json', json_encode($gameState));
+    }
+
+    // Команда для добавления загадки /add [эмодзи] [факт]
+    elseif (str_starts_with($message, '/add')) {
+        $parts = preg_split('/\s+/', $message, 3);
+        if (count($parts) === 3) {
+            $emoji = trim($parts[1]);
+            $fact = trim($parts[2]);
+
+            // Улучшенная проверка на эмодзи
+            if (preg_match('/^[\x{1F000}-\x{1FFFF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]+$/u', $emoji)) {
+                addRiddle($emoji, $fact);
+                $response_text = "Загадка успешно добавлена!";
+            } else {
+                $response_text = "Ошибка: ключ должен состоять только из эмодзи.";
+            }
+        } else {
+            $response_text = "Неверный формат. Используйте: /add [эмодзи] [факт]" . PHP_EOL .
+                "Например: /add 🍎 Этот фрукт часто ассоциируется с компанией, основанной Стивом Джобсом" . PHP_EOL .
+                "Вы также можете использовать несколько эмодзи: /add 🌞🌡️ Это явление часто наблюдается в пустынях.";
+        }
+    }
+
+    // Команда для удаления
+    elseif (str_starts_with($message, '/delete')) {
+        $parts = explode(' ', $message, 2);
+        if (count($parts) === 2) {
+            if (deleteRiddle($parts[1])) {
+                $response_text = "Загадка удалена!";
+            } else {
+                $response_text = "Загадка не найдена.";
+            }
+        } else {
+            $response_text = "Использование: /delete_riddle [эмодзи]";
+        }
+
+    }
+
+    // Команда для вывода списка загадок
+    elseif ($message === '/list') {
+        $response_text = listRiddles();
+    }
+
+    $response_text = $response_text ?? $username  . PHP_EOL . "У меня нет такой команды 😕";
 
     // Отправка ответа
     sendMessage($chat_id, $response_text);
@@ -259,7 +317,7 @@ function updateScore(&$gameState, $userId, $points, $username) {
 // Обработка обычных сообщений
 function message_processing($message, $username, $chat_id, $user_id): string
 {
-    global $gameState, $emojiFactsAboutDasha, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes;
+    global $gameState, $riddles, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes;
     $username = $username ?? '';
     $message = $message ?? '';
 
@@ -279,7 +337,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
-    $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8');
+    $correctAnswer = mb_strtolower($riddles[$gameState['current_emoji']], 'UTF-8');
     $userAnswer = mb_strtolower($message, 'UTF-8');
 
 
@@ -294,7 +352,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
         $gameState['solved_riddles'][] = $gameState['current_emoji'];
 
         // Выбираем новую загадку из нерешенных
-        $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
+        $unsolved_riddles = array_diff(array_keys($riddles), $gameState['solved_riddles']);
 
         // Если все загадки решены, заканчиваем игру
         if (empty($unsolved_riddles)) {
@@ -334,7 +392,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
                 $response_text .= "Поздравляю! Ты полностью разгадал(а) загадку: Даша \"$correctAnswer\"." . PHP_EOL;
 
                 // Выбираем новую загадку из нерешенных
-                $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
+                $unsolved_riddles = array_diff(array_keys($riddles), $gameState['solved_riddles']);
 
                 // Если все загадки решены, заканчиваем игру
                 if (empty($unsolved_riddles)) {
@@ -387,4 +445,50 @@ function endGame($chat_id): string
     return $response_text;
 }
 
+// Функция для загрузки загадок из JSON-файла
+function loadRiddles() {
+    $file = 'riddles.json';
+    if (file_exists($file)) {
+        $content = file_get_contents($file);
+        return json_decode($content, true);
+    }
+    return [];
+}
 
+// Функция для сохранения загадок в JSON-файл
+function saveRiddles($riddles): void
+{
+    $file = 'riddles.json';
+    file_put_contents($file, json_encode($riddles, JSON_PRETTY_PRINT));
+}
+
+// Функция для добавления новой загадки
+function addRiddle($emoji, $fact): void
+{
+    $riddles = loadRiddles();
+    $riddles[$emoji] = $fact;
+    saveRiddles($riddles);
+}
+
+// Функция для удаления загадки
+function deleteRiddle($emoji): bool
+{
+    $riddles = loadRiddles();
+    if (isset($riddles[$emoji])) {
+        unset($riddles[$emoji]);
+        saveRiddles($riddles);
+        return true;
+    }
+    return false;
+}
+
+// Функция для получения списка всех загадок
+function listRiddles(): string
+{
+    $riddles = loadRiddles();
+    $list = "Список загадок:\n\n";
+    foreach ($riddles as $emoji => $fact) {
+        $list .= "$emoji - $fact\n";
+    }
+    return $list;
+}
