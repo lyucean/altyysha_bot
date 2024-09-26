@@ -16,17 +16,9 @@ $allowed_commands = ['/start', '/end', '/stats', '/hint'];
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
 
-// Загружаем текущее состояние игры
-$gameState = json_decode(file_get_contents('game_state.json'), true);
-// В начале скрипта, где инициализируется $gameState
-if (!isset($gameState['current_sentence'])) {
-    $gameState['current_sentence'] = ''; // Текущая загадка
-    $gameState['guessed_words'] = []; // Угаданные слова
-}
-
 logs('Старт бота');
 
-// Основной код
+// Обработка, каким методом будет работать наш бот
 if ($use_webhook) {
     logs('Режим WebHook');
     // Режим вебхука
@@ -50,6 +42,29 @@ if ($use_webhook) {
         sleep(2);
     }
 }
+
+// Функция инициализации состояния игры
+function initializeGameState(): void
+{
+    global $gameState;
+
+    if (!file_exists('game_state.json')) {
+        $gameState = [
+            'active' => false,
+            'current_emoji' => '',
+            'solved_riddles' => [],
+            'guessed_words' => [],
+            'score' => [],
+            'usernames' => []
+        ];
+        file_put_contents('game_state.json', json_encode($gameState));
+    } else { // Загружаем текущее состояние игры
+        $gameState = json_decode(file_get_contents('game_state.json'), true);
+    }
+}
+
+// Инициализация состояния игры
+initializeGameState();
 
 // Функция для отправки сообщений
 function sendMessage($chat_id, $text): void
@@ -144,9 +159,15 @@ function command_processing($message, $username, $chat_id, $user_id): string
 
     // Команда для начала игры
     if ($message == '/start') {
-        if ($user_id === (int)$allowed_user_id) { // Шутка для неразрешенных пользователей
-            $gameState['active'] = true;
-            $gameState['current_emoji'] = array_rand($emojiFactsAboutDasha);
+        if ($user_id === (int)$allowed_user_id) {
+            $gameState = [
+                'active' => true,
+                'current_emoji' => array_rand($emojiFactsAboutDasha),
+                'solved_riddles' => [],
+                'guessed_words' => [],
+                'score' => [],
+                'usernames' => []
+            ];
             $response_text = "Игра началась! Вот первая загадка: " . $gameState['current_emoji'];
             file_put_contents('game_state.json', json_encode($gameState));
         } else {
@@ -227,12 +248,13 @@ function message_processing($message, $username, $chat_id, $user_id): string
     $correctAnswer = mb_strtolower($emojiFactsAboutDasha[$gameState['current_emoji']], 'UTF-8');
     $userAnswer = mb_strtolower($message, 'UTF-8');
 
-    // Проверка на полное совпадение ответа
-    if ($userAnswer == $correctAnswer) {
+
+    if ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
-        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
+        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". "
+            . PHP_EOL . " Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
 
         // Добавляем текущую загадку в список решенных
         $gameState['solved_riddles'][] = $gameState['current_emoji'];
@@ -240,10 +262,9 @@ function message_processing($message, $username, $chat_id, $user_id): string
         // Выбираем новую загадку из нерешенных
         $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
 
+        // Если все загадки решены, заканчиваем игру
         if (empty($unsolved_riddles)) {
-            // Если все загадки решены, сбрасываем список решенных загадок
-            $gameState['solved_riddles'] = [];
-            $unsolved_riddles = array_keys($emojiFactsAboutDasha);
+            return endGame($chat_id);
         }
 
         $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
@@ -281,10 +302,9 @@ function message_processing($message, $username, $chat_id, $user_id): string
                 // Выбираем новую загадку из нерешенных
                 $unsolved_riddles = array_diff(array_keys($emojiFactsAboutDasha), $gameState['solved_riddles']);
 
+                // Если все загадки решены, заканчиваем игру
                 if (empty($unsolved_riddles)) {
-                    // Если все загадки решены, сбрасываем список решенных загадок
-                    $gameState['solved_riddles'] = [];
-                    $unsolved_riddles = array_keys($emojiFactsAboutDasha);
+                    return endGame($chat_id);
                 }
 
                 $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
@@ -305,6 +325,29 @@ function message_processing($message, $username, $chat_id, $user_id): string
     file_put_contents('game_state.json', json_encode($gameState));
 
     // Отправка ответа пользователю
+    sendMessage($chat_id, $response_text);
+
+    return $response_text;
+}
+
+// Метод вывода информации при завершении игры
+function endGame($chat_id): string
+{
+    global $gameState;
+
+    $gameState['active'] = false;
+
+    $response_text = "Поздравляем! Все загадки разгаданы! 🎉" . PHP_EOL . PHP_EOL;
+    $response_text .= "Финальный рейтинг игроков:" . PHP_EOL;
+
+    arsort($gameState['score']); // Сортируем игроков по очкам (по убыванию)
+    foreach ($gameState['score'] as $userId => $score) {
+        $username = $gameState['usernames'][$userId] ?? 'Аноним';
+        $response_text .= "$username: $score очков" . PHP_EOL;
+    }
+
+    $response_text .= PHP_EOL . "Спасибо за участие! Игра окончена.";
+
     sendMessage($chat_id, $response_text);
 
     return $response_text;
