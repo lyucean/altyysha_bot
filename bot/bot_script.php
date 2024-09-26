@@ -19,6 +19,7 @@ $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true д�
 logs('Старт бота');
 
 // Обработка, каким методом будет работать наш бот
+// Обработка, каким методом будет работать наш бот
 if ($use_webhook) {
     logs('Режим WebHook');
     // Режим вебхука
@@ -27,19 +28,23 @@ if ($use_webhook) {
 } else {
     logs('Режим Polling');
 
-    $offset = 0;
-    while (true) {
-        $updates = file_get_contents("https://api.telegram.org/bot$token/getUpdates?offset=$offset&limit=1");
-        $updates = json_decode($updates, true);
+    // Удаляем вебхук перед запуском режима Polling
+    if (deleteWebhook($token)) {
+        $offset = 0;
+        while (true) {
+            $updates = file_get_contents("https://api.telegram.org/bot$token/getUpdates?offset=$offset&limit=1");
+            $updates = json_decode($updates, true);
 
-        print_r($updates);
-        if (isset($updates['result'][0])) {
-            $update = $updates['result'][0];
-            $offset = $update['update_id'] + 1;
-            handleUpdate($update);
+            if (isset($updates['result'][0])) {
+                $update = $updates['result'][0];
+                $offset = $update['update_id'] + 1;
+                handleUpdate($update);
+            }
+
+            sleep(2);
         }
-
-        sleep(2);
+    } else {
+        logs("Не удалось удалить вебхук. Polling не может быть запущен.");
     }
 }
 
