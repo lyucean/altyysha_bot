@@ -45,6 +45,3 @@ update: down ## Обновить и перезапустить контейне�
 
 bot: ## Запустить PHP-скрипт бота в консоли контейнера
 	docker compose exec $(SERVICE) php /var/www/html/bot_script.php
-
-bot: ## Запустить PHP-скрипт бота в консоли контейнера
-	docker compose exec $(SERVICE) php /var/www/html/bot_script.php
