@@ -234,7 +234,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
         }
     }
 
-    $response_text = $response_text ?? $username . "У меня нет такой команды 😕";
+    $response_text = $response_text ?? $username  . PHP_EOL . " У меня нет такой команды 😕";
 
     // Отправка ответа
     sendMessage($chat_id, $response_text);
