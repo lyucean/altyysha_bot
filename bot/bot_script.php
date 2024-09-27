@@ -86,8 +86,8 @@ function handleUpdate($update): void
 
     logs(print_r($update, JSON_UNESCAPED_UNICODE),);
 
-    if (!isset($update['message']['chat']['id'])) {
-        print_r('Hello bot!');
+    if (!isset($update['message']['chat']['id'])) { // Если сообщение не содержит ID чата
+        logs('Hello bot!');
         return;
     }
 
