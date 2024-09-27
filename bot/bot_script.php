@@ -29,23 +29,18 @@ if ($use_webhook) {
 } else {
     logs('Режим Polling');
 
-    // Удаляем вебхук перед запуском режима Polling
-    if (deleteWebhook($token)) {
-        $offset = 0;
-        while (true) {
-            $updates = file_get_contents("https://api.telegram.org/bot$token/getUpdates?offset=$offset&limit=1");
-            $updates = json_decode($updates, true);
+    $offset = 0;
+    while (true) {
+        $updates = file_get_contents("https://api.telegram.org/bot$token/getUpdates?offset=$offset&limit=1");
+        $updates = json_decode($updates, true);
 
-            if (isset($updates['result'][0])) {
-                $update = $updates['result'][0];
-                $offset = $update['update_id'] + 1;
-                handleUpdate($update);
-            }
-
-            sleep(2);
+        if (isset($updates['result'][0])) {
+            $update = $updates['result'][0];
+            $offset = $update['update_id'] + 1;
+            handleUpdate($update);
         }
-    } else {
-        logs("Не удалось удалить вебхук. Polling не может быть запущен.");
+
+        sleep(2);
     }
 }
 

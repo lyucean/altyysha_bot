@@ -71,7 +71,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /var/www/altyysha.com/
-            docker compose exec altyysha php /var/www/html/init.php
+            docker compose exec altyysha php /var/www/html/init_polling.php
 
   test-web:
     runs-on: ubuntu-latest
