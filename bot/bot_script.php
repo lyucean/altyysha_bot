@@ -86,6 +86,11 @@ function handleUpdate($update): void
 
     logs(print_r($update, JSON_UNESCAPED_UNICODE),);
 
+    if (!isset($update['message']['chat']['id'])) {
+        print_r('Hello bot!');
+        return;
+    }
+
     // Обработка текстовых сообщений
     $chat_id = $update['message']['chat']['id']; // ID чата
 
