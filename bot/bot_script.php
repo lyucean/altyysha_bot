@@ -49,7 +49,7 @@ function initializeGameState(): void
 {
     global $gameState;
 
-    if (!file_exists('game_state.json')) {
+    if (!file_exists('storage_game_state.json')) {
         $gameState = [
             'active' => false,
             'current_emoji' => '',
@@ -58,9 +58,9 @@ function initializeGameState(): void
             'score' => [],
             'usernames' => []
         ];
-        file_put_contents('game_state.json', json_encode($gameState));
+        file_put_contents('storage_game_state.json', json_encode($gameState));
     } else { // Загружаем текущее состояние игры
-        $gameState = json_decode(file_get_contents('game_state.json'), true);
+        $gameState = json_decode(file_get_contents('storage_game_state.json'), true);
     }
 }
 
@@ -213,7 +213,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
             $hint = getHint($riddles[$gameState['current_emoji']]);
             $joke = $hintJokes[array_rand($hintJokes)];
             $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
-            file_put_contents('game_state.json', json_encode($gameState));
+            file_put_contents('storage_game_state.json', json_encode($gameState));
         } else {
             updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
             $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
@@ -241,14 +241,14 @@ function command_processing($message, $username, $chat_id, $user_id): string
         ];
 
         $response_text = "Игра началась! " . PHP_EOL . "Вот первая загадка: " . $gameState['current_emoji'];
-        file_put_contents('game_state.json', json_encode($gameState));
+        file_put_contents('storage_game_state.json', json_encode($gameState));
     }
 
     // Команда для завершения игры
     elseif ($command == '/end') {
         $gameState['active'] = false;
         $response_text = "Игра окончена. Спасибо за участие!";
-        file_put_contents('game_state.json', json_encode($gameState));
+        file_put_contents('storage_game_state.json', json_encode($gameState));
     }
 
     // Команда для добавления загадки /add [эмодзи] [факт]
@@ -309,7 +309,7 @@ function updateScore(&$gameState, $userId, $points, $username) {
     $gameState['score'][$userId] += $points;
 
     // Сохраняем обновленное состояние игры
-    file_put_contents('game_state.json', json_encode($gameState));
+    file_put_contents('storage_game_state.json', json_encode($gameState));
 
     return $gameState['score'][$userId];
 }
@@ -414,7 +414,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Сохранение обновленного состояния игры
-    file_put_contents('game_state.json', json_encode($gameState));
+    file_put_contents('storage_game_state.json', json_encode($gameState));
 
     // Отправка ответа пользователю
     sendMessage($chat_id, $response_text);
@@ -447,7 +447,7 @@ function endGame($chat_id): string
 
 // Функция для загрузки загадок из JSON-файла
 function loadRiddles() {
-    $file = 'riddles.json';
+    $file = 'storage_riddles.json';
     if (file_exists($file)) {
         $content = file_get_contents($file);
         return json_decode($content, true);
@@ -458,7 +458,7 @@ function loadRiddles() {
 // Функция для сохранения загадок в JSON-файл
 function saveRiddles($riddles): void
 {
-    $file = 'riddles.json';
+    $file = 'storage_riddles.json';
     file_put_contents($file, json_encode($riddles, JSON_PRETTY_PRINT));
 }
 

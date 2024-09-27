@@ -13,43 +13,21 @@ if (!$botToken) {
     die("Ошибка: BOT_TOKEN не найден в файле .env");
 }
 
-// URL для установки вебхука
-$webhookUrl = 'https://altyysha.com/bot_script.php';
+// Функция для удаления вебхука
+$url = "https://api.telegram.org/bot$botToken/deleteWebhook";
 
-// URL для API Telegram
-$apiUrl = "https://api.telegram.org/bot{$botToken}/setWebhook";
+$result = file_get_contents($url);
 
-// Параметры запроса
-$params = [
-    'url' => $webhookUrl,
-];
-
-// Инициализация cURL сессии
-$ch = curl_init($apiUrl);
-
-// Настройка параметров cURL
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-
-// Выполнение запроса
-$response = curl_exec($ch);
-
-// Проверка на ошибки
-if (curl_errno($ch)) {
-    echo 'Ошибка cURL: ' . curl_error($ch);
-} else {
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if ($httpCode == 200) {
-        $result = json_decode($response, true);
-        if ($result['ok']) {
-            echo "Вебхук успешно установлен на {$webhookUrl}";
-        } else {
-            echo "Ошибка при установке вебхука: " . $result['description'];
-        }
-    } else {
-        echo "Ошибка HTTP: {$httpCode}";
-    }
+if ($result === FALSE) {
+    logs("Ошибка при удалении вебхука");
+    return false;
 }
 
-// Закрытие cURL сессии
-curl_close($ch);
+$response = json_decode($result, true);
+if ($response['ok']) {
+    logs("Вебхук удален успешно");
+    return true;
+} else {
+    logs("Ошибка: " . $response['description']);
+    return false;
+}
