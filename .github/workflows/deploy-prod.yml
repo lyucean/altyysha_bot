@@ -18,7 +18,7 @@ jobs:
 
       - name: "Заполнение переменных среды"
         run: |
-          echo "YOUR_BOT_TOKEN=${{ secrets.YOUR_BOT_TOKEN }}" >> .env
+          echo "YOUR_BOT_TOKEN=${{ secrets.BOT_TOKEN }}" >> .env
           echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" >> .env
           echo "USE_WEBHOOK=${{ vars.USE_WEBHOOK }}" >> .env
           echo "BOT_NAME=${{ vars.BOT_NAME }}" >> .env
