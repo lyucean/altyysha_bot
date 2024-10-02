@@ -11,6 +11,8 @@ loadEnv(__DIR__ . '/.env');
 $token = getenv('BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
 $allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
+$game_state_file = __DIR__ . '/storage_game_state.json'; // файл для хранения состояния игры
+$riddles_file = __DIR__ . '/storage_riddles.json'; // фай для хранения загадок
 $allowed_commands = ['/stats', '/hint']; // Массив разрешенных команд
 $admin_commands = ['/start', '/end', '/add', '/delete', '/list'];  // Массив разрешенных команд для админа
 $riddles = loadRiddles(); // Загрузка загадок из JSON-файла
@@ -18,6 +20,7 @@ $riddles = loadRiddles(); // Загрузка загадок из JSON-файл�
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
 
 logs('Старт бота');
+error_log("Текущий рабочий каталог: " . getcwd());
 
 // Обработка, каким методом будет работать наш бот
 // Обработка, каким методом будет работать наш бот
@@ -47,9 +50,9 @@ if ($use_webhook) {
 // Функция инициализации состояния игры
 function initializeGameState(): void
 {
-    global $gameState;
+    global $gameState, $game_state_file;
 
-    if (!file_exists('storage_game_state.json')) {
+    if (!file_exists($game_state_file)) {
         $gameState = [
             'active' => false,
             'current_emoji' => '',
@@ -58,9 +61,11 @@ function initializeGameState(): void
             'score' => [],
             'usernames' => []
         ];
-        file_put_contents('storage_game_state.json', json_encode($gameState));
+        if (file_put_contents($game_state_file, json_encode($gameState)) === false) {
+            error_log("Ошибка при записи в файл: $game_state_file");
+        }
     } else { // Загружаем текущее состояние игры
-        $gameState = json_decode(file_get_contents('storage_game_state.json'), true);
+        $gameState = json_decode(file_get_contents($game_state_file), true);
     }
 }
 
@@ -194,7 +199,7 @@ function extractCommand($message): string
 // Обработка команд
 function command_processing($message, $username, $chat_id, $user_id): string
 {
-    global $riddles, $gameState, $hintJokes;
+    global $riddles, $gameState, $hintJokes, $game_state_file;
     $username = $username ?? '';
     $message = $message ?? '';
 
@@ -213,7 +218,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
             $hint = getHint($riddles[$gameState['current_emoji']]);
             $joke = $hintJokes[array_rand($hintJokes)];
             $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
-            file_put_contents('storage_game_state.json', json_encode($gameState));
+            file_put_contents($game_state_file, json_encode($gameState));
         } else {
             updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
             $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
@@ -241,14 +246,14 @@ function command_processing($message, $username, $chat_id, $user_id): string
         ];
 
         $response_text = "Игра началась! " . PHP_EOL . "Вот первая загадка: " . $gameState['current_emoji'];
-        file_put_contents('storage_game_state.json', json_encode($gameState));
+        file_put_contents($game_state_file, json_encode($gameState));
     }
 
     // Команда для завершения игры
     elseif ($command == '/end') {
         $gameState['active'] = false;
         $response_text = "Игра окончена. Спасибо за участие!";
-        file_put_contents('storage_game_state.json', json_encode($gameState));
+        file_put_contents($game_state_file, json_encode($gameState));
     }
 
     // Команда для добавления загадки /add [эмодзи] [факт]
@@ -302,6 +307,8 @@ function command_processing($message, $username, $chat_id, $user_id): string
 
 // Функция для обновления счета игрока
 function updateScore(&$gameState, $userId, $points, $username) {
+    global $game_state_file;
+
     if (!isset($gameState['score'][$userId])) {
         $gameState['score'][$userId] = 0;
         $gameState['usernames'][$userId] = $username;
@@ -309,7 +316,7 @@ function updateScore(&$gameState, $userId, $points, $username) {
     $gameState['score'][$userId] += $points;
 
     // Сохраняем обновленное состояние игры
-    file_put_contents('storage_game_state.json', json_encode($gameState));
+    file_put_contents($game_state_file, json_encode($gameState));
 
     return $gameState['score'][$userId];
 }
@@ -317,7 +324,7 @@ function updateScore(&$gameState, $userId, $points, $username) {
 // Обработка обычных сообщений
 function message_processing($message, $username, $chat_id, $user_id): string
 {
-    global $gameState, $riddles, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes;
+    global $gameState, $riddles, $correctGuessJokes, $partialGuessJokes, $wrongGuessJokes, $game_state_file;
     $username = $username ?? '';
     $message = $message ?? '';
 
@@ -414,7 +421,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Сохранение обновленного состояния игры
-    file_put_contents('storage_game_state.json', json_encode($gameState));
+    file_put_contents($game_state_file, json_encode($gameState));
 
     // Отправка ответа пользователю
     sendMessage($chat_id, $response_text);
@@ -447,9 +454,9 @@ function endGame($chat_id): string
 
 // Функция для загрузки загадок из JSON-файла
 function loadRiddles() {
-    $file = 'storage_riddles.json';
-    if (file_exists($file)) {
-        $content = file_get_contents($file);
+    global $riddles_file;
+    if (file_exists($riddles_file)) {
+        $content = file_get_contents($riddles_file);
         return json_decode($content, true);
     }
     return [];
@@ -458,8 +465,10 @@ function loadRiddles() {
 // Функция для сохранения загадок в JSON-файл
 function saveRiddles($riddles): void
 {
-    $file = 'storage_riddles.json';
-    file_put_contents($file, json_encode($riddles, JSON_PRETTY_PRINT));
+    global $riddles_file;
+    if (file_put_contents($riddles_file, json_encode($riddles, JSON_PRETTY_PRINT)) === false) {
+        error_log("Ошибка при записи в файл: $riddles_file");
+    }
 }
 
 // Функция для добавления новой загадки
