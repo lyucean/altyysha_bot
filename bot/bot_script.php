@@ -193,7 +193,7 @@ function isAllowedCommand($message, $user_id, $chat_id): bool
         if ($user_id === (int)$allowed_user_id) {
             return true;
         }else{
-            sendMessage($chat_id, "Зря стараешься. Такие переговоры не твой уровень, не твой ранг. Мне нечего тебе предложить, молодой человек. Только соль и перец.♂️");
+            sendMessage($chat_id, "Зря стараешься. Такие переговоры не твой уровень, не твой ранг. Мне нечего тебе предложить, молодой человек. Только соль и перец.");
         }
     }
 
@@ -231,7 +231,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
     elseif ($command == '/hint') {
         // Проверка, активна ли игра
         if (!isset($gameState['active']) || !$gameState['active']) {
-            $response_text = "@$username" . PHP_EOL . "Игра ещё не началась!🥲";
+            $response_text = "Игра ещё не началась!🥲";
         } else {
             $currentScore = updateScore($gameState, $user_id, -1, $username);
             if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
@@ -359,15 +359,17 @@ function message_processing($message, $username, $chat_id, $user_id): string
         $gameState['guessed_words'] = [];
     }
 
+    // Проверка, активна ли игра
+    if (!$gameState['active']) {
+        sendMessage($chat_id, 'Игра ещё не началась!🥲');
+        return 'Игра ещё не началась!🥲';
+    }
+
     // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
     $correctAnswer = mb_strtolower($riddles[$gameState['current_emoji']], 'UTF-8');
     $userAnswer = mb_strtolower($message, 'UTF-8');
 
-    // Проверка, активна ли игра
-    if (!$gameState['active']) {
-        return 'Игра ещё не началась!🥲';
-    }
-    elseif ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
+    if ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
