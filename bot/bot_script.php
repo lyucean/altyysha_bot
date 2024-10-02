@@ -25,7 +25,7 @@ $bot_name = getenv('BOT_NAME');
 $allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
 $game_state_file = __DIR__ . '/storage_game_state.json'; // файл для хранения состояния игры
 $riddles_file = __DIR__ . '/storage_riddles.json'; // фай для хранения загадок
-$allowed_commands = ['/stats', '/hint']; // Массив разрешенных команд
+$allowed_commands = ['/stats', '/hint', '/rules']; // Массив разрешенных команд
 $admin_commands = ['/start', '/end', '/add', '/del', '/list'];  // Массив разрешенных команд для админа
 $riddles = loadRiddles(); // Загрузка загадок из JSON-файла
 // Конфигурация
@@ -162,6 +162,23 @@ function getStats($gameState): string
     return $stats;
 }
 
+// Функция для получения правил игры
+function getRules(): string
+{
+    return "🎮 Правила игры:" . PHP_EOL
+        . "1️⃣ Бот будет отправлять эмодзи, которые представляют определенный факт о нашей прекрасной Дашеньке." . PHP_EOL
+        . "2️⃣ Ваша задача - угадать, какой факт означает этот эмодзи." . PHP_EOL
+        . "3️⃣ За полностью правильный ответ вы получаете 5 баллов." . PHP_EOL
+        . "4️⃣ За каждое правильно угаданное слово вы получаете 2 балла." . PHP_EOL
+        . "5️⃣ При угадывании по словам есть ограничение: не больше одного угаданного слова на человека на одну загадку." . PHP_EOL
+        . "6️⃣ Вы можете использовать команду /hint для получения подсказки, но это будет стоить вам 1 балл." . PHP_EOL
+        . "7️⃣ Используйте команду /stats, чтобы увидеть текущий счет игроков." . PHP_EOL
+        . "8️⃣ Игра продолжается, пока не будут отгаданы все загадки." . PHP_EOL
+        . "9️⃣ Церемония награждений первых трех мест вас ждет на празднике (ну или она позже вас настигнет)." . PHP_EOL
+        . "🔟 Если вы будете активны, бот будет подкидывать вам интересные факты о Даше, о которых вы и не знали." . PHP_EOL
+        . PHP_EOL
+        . "Удачи и веселой игры! 🍀😊";
+}
 
 // Функция для получения подсказки
 function getHint($answer): string
@@ -223,8 +240,12 @@ function command_processing($message, $username, $chat_id, $user_id): string
 
     // Команда для просмотра статистики
     if ($command == '/stats') {
-        $stats = getStats($gameState) . PHP_EOL . PHP_EOL;
-        $response_text = $stats;
+        $response_text = getStats($gameState) . PHP_EOL ;;
+    }
+
+    // Команда для просмотра правил
+    elseif ($command == '/rules') {
+        $response_text = getRules() . PHP_EOL ;;
     }
 
     // Команда для получения подсказки
@@ -237,11 +258,11 @@ function command_processing($message, $username, $chat_id, $user_id): string
             if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
                 $hint = getHint($riddles[$gameState['current_emoji']]);
                 $joke = $hintJokes[array_rand($hintJokes)];
-                $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
+                $response_text = "$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
                 file_put_contents($game_state_file, json_encode($gameState));
             } else {
                 updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
-                $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
+                $response_text = "$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
             }
         }
     }
@@ -253,7 +274,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
             return "Извините, но список загадок пуст. Игру невозможно начать. Пожалуйста, добавьте загадки с помощью команды /add";
         }
 
-        if ($gameState['active'] === 'active') {
+        if (($gameState['active'] ?? '') === 'active') {
             return "Игра уже идет! Используйте /end, чтобы закончить текущую игру.";
         }
 
@@ -266,7 +287,12 @@ function command_processing($message, $username, $chat_id, $user_id): string
             'usernames' => []
         ];
 
-        $response_text = "Игра началась! " . PHP_EOL . "Вот первая загадка: " . $gameState['current_emoji'];
+        $response_text = "Игра началась! 🎉" . PHP_EOL
+            . "Вот первая загадка:"
+            . $gameState['current_emoji'] . PHP_EOL
+            . PHP_EOL
+            . PHP_EOL
+            . "Чтобы увидеть правила игры, используйте команду /rules" . PHP_EOL;
         file_put_contents($game_state_file, json_encode($gameState));
     }
 
@@ -373,7 +399,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
-        $response_text = "@$username, $joke Это действительно \"$correctAnswer\". "
+        $response_text = "$username, $joke Это действительно \"$correctAnswer\". "
             . PHP_EOL . " Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
 
         // Добавляем текущую загадку в список решенных
@@ -408,7 +434,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
             $currentScore = updateScore($gameState, $user_id, $points, $username);
             $guessedWordsStr = implode(', ', $newGuessedWords);
             $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
-            $response_text = "@$username, $joke " . PHP_EOL . "Ты угадал(а) слова: $guessedWordsStr. "
+            $response_text = "$username, $joke " . PHP_EOL . "Ты угадал(а) слова: $guessedWordsStr. "
                 . PHP_EOL . "Получаешь $points балла(ов)! "
                 . PHP_EOL . "Твой счет: $currentScore" . PHP_EOL;
 
@@ -438,7 +464,7 @@ function message_processing($message, $username, $chat_id, $user_id): string
         } else {
             // Если новых угаданных слов нет
             $joke = $wrongGuessJokes[array_rand($wrongGuessJokes)];
-            $response_text = "@$username, $joke " . PHP_EOL . "Попробуй еще раз!";
+            $response_text = "$username, $joke " . PHP_EOL . "Попробуй еще раз!";
         }
     }
 
