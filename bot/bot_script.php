@@ -228,16 +228,21 @@ function command_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Команда для получения подсказки
-    elseif ($command == '/hint' && $gameState['active']) {
-        $currentScore = updateScore($gameState, $user_id, -1, $username);
-        if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
-            $hint = getHint($riddles[$gameState['current_emoji']]);
-            $joke = $hintJokes[array_rand($hintJokes)];
-            $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
-            file_put_contents($game_state_file, json_encode($gameState));
+    elseif ($command == '/hint') {
+        // Проверка, активна ли игра
+        if (!isset($gameState['active']) || !$gameState['active']) {
+            $response_text = "@$username" . PHP_EOL . "Игра ещё не началась!🥲";
         } else {
-            updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
-            $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
+            $currentScore = updateScore($gameState, $user_id, -1, $username);
+            if ($currentScore >= 0) { // если у пользователя есть баллы на подсказку
+                $hint = getHint($riddles[$gameState['current_emoji']]);
+                $joke = $hintJokes[array_rand($hintJokes)];
+                $response_text = "@$username, $joke\nПодсказка: слово на букву '$hint'\nТвой текущий счет: $currentScore";
+                file_put_contents($game_state_file, json_encode($gameState));
+            } else {
+                updateScore($gameState, $user_id, 1, $username); // Возвращаем балл обратно
+                $response_text = "@$username, у тебя недостаточно баллов для подсказки. Продолжай угадывать!";
+            }
         }
     }
 
@@ -344,11 +349,6 @@ function message_processing($message, $username, $chat_id, $user_id): string
     $username = $username ?? '';
     $message = $message ?? '';
 
-    // Проверка, активна ли игра
-    if (!$gameState['active']) {
-        return 'Игра ещё не началась!🥲';
-    }
-
     // Инициализация массива отгаданных загадок, если его еще нет
     if (!isset($gameState['solved_riddles'])) {
         $gameState['solved_riddles'] = [];
@@ -363,8 +363,11 @@ function message_processing($message, $username, $chat_id, $user_id): string
     $correctAnswer = mb_strtolower($riddles[$gameState['current_emoji']], 'UTF-8');
     $userAnswer = mb_strtolower($message, 'UTF-8');
 
-
-    if ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
+    // Проверка, активна ли игра
+    if (!$gameState['active']) {
+        return 'Игра ещё не началась!🥲';
+    }
+    elseif ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
@@ -385,7 +388,8 @@ function message_processing($message, $username, $chat_id, $user_id): string
         $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
         $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
         $response_text .= PHP_EOL . "Следующая загадка: " . $gameState['current_emoji'];
-    } else {
+    }
+    else { // Проверка на частичное совпадение
         // Разбиение ответов на слова
         $words = explode(' ', $correctAnswer);
         $userWords = explode(' ', $userAnswer);
