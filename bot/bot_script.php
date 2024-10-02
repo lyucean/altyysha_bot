@@ -38,7 +38,6 @@ logs("Текущий рабочий каталог: " . getcwd());
 initializeGameState(); // Должна быть тут, иначе не успеет подгрузить до обработки команд
 
 // Обработка, каким методом будет работать наш бот
-// Обработка, каким методом будет работать наш бот
 if ($use_webhook) {
     logs('Режим WebHook');
     // Режим вебхука
@@ -74,7 +73,8 @@ function initializeGameState(): void
             'solved_riddles' => [],
             'guessed_words' => [],
             'score' => [],
-            'usernames' => []
+            'usernames' => [],
+            'guessed_words_per_player' => []
         ];
         if (file_put_contents($game_state_file, json_encode($gameState)) === false) {
             error_log("Ошибка при записи в файл: $game_state_file");
@@ -431,43 +431,56 @@ function message_processing($message, $username, $chat_id, $user_id): string
         $newGuessedWords = array_diff($correctGuessedWords, $gameState['guessed_words']);
 
         if (!empty($newGuessedWords)) {
-            // Подсчет очков за новые угаданные слова
-            $points = count($newGuessedWords) * 2;
-            $currentScore = updateScore($gameState, $user_id, $points, $username);
-            $guessedWordsStr = implode(', ', $newGuessedWords);
-            $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
-            $response_text = "$username, $joke " . PHP_EOL . "Ты угадал(а) слова: $guessedWordsStr. "
-                . PHP_EOL . "Получаешь $points балла(ов)! "
-                . PHP_EOL . "Твой счет: $currentScore" . PHP_EOL;
+            // Проверяем, не угадал ли уже игрок слово в этой загадке
+            if (!isset($gameState['guessed_words_per_player'][$user_id])) {
+                $gameState['guessed_words_per_player'][$user_id] = [];
+            }
 
-            $gameState['guessed_words'] = array_merge($gameState['guessed_words'], $newGuessedWords);
+            // Проверяем, угадывал ли уже игрок слово в текущей загадке
+            if (!in_array($gameState['current_emoji'], $gameState['guessed_words_per_player'][$user_id])) {
+                $word = reset($newGuessedWords); // Берем только первое новое слово
+                $points = 2;
+                $currentScore = updateScore($gameState, $user_id, $points, $username);
+                $joke = $partialGuessJokes[array_rand($partialGuessJokes)];
+                $response_text = "$username, $joke " . PHP_EOL . "Ты угадал(а) слово: $word. "
+                    . PHP_EOL . "Получаешь $points балла! "
+                    . PHP_EOL . "Твой счет: $currentScore" . PHP_EOL;
 
-            // Проверяем, все ли слова отгаданы
-            if (count($gameState['guessed_words']) == count($words)) {
-                // Все слова отгаданы, считаем загадку полностью разгаданной
-                $gameState['solved_riddles'][] = $gameState['current_emoji'];
-                $response_text .= "Поздравляю! Ты полностью разгадал(а) загадку: Даша \"$correctAnswer\"." . PHP_EOL;
+                $gameState['guessed_words'][] = $word;
+                $gameState['guessed_words_per_player'][$user_id][] = $gameState['current_emoji'];
 
-                // Выбираем новую загадку из нерешенных
-                $unsolved_riddles = array_diff(array_keys($riddles), $gameState['solved_riddles']);
+                // Проверяем, все ли слова отгаданы
+                if (count($gameState['guessed_words']) == count($words)) {
+                    // Все слова отгаданы, считаем загадку полностью разгаданной
+                    $gameState['solved_riddles'][] = $gameState['current_emoji'];
+                    $response_text .= "Поздравляю! Вы полностью разгадали загадку: \"$correctAnswer\"." . PHP_EOL;
 
-                // Если все загадки решены, заканчиваем игру
-                if (empty($unsolved_riddles)) {
-                    return endGame($chat_id);
+                    // Выбираем новую загадку из нерешенных
+                    $unsolved_riddles = array_diff(array_keys($riddles), $gameState['solved_riddles']);
+
+                    // Если все загадки решены, заканчиваем игру
+                    if (empty($unsolved_riddles)) {
+                        return endGame($chat_id);
+                    }
+
+                    $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
+                    $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
+                    $gameState['guessed_words_per_player'] = []; // Сброс угаданных слов на игрока для новой загадки
+
+                    $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
+                } else {
+                    $response_text .= "Продолжайте угадывать!💪🏻"
+                        . PHP_EOL . "Еще есть не отгаданные слова 😜";
                 }
-
-                $gameState['current_emoji'] = $unsolved_riddles[array_rand($unsolved_riddles)];
-                $gameState['guessed_words'] = []; // Сброс угаданных слов для новой загадки
-                $response_text .= "Следующая загадка: " . $gameState['current_emoji'];
             } else {
-                $response_text .= "Продолжай угадывать!💪🏻"
-                    . PHP_EOL . "Еще есть не отгаданные слова 😜";
+                $response_text = "$username, ты уже угадал(а) слово в этой загадке. Дай шанс другим! 😉";
             }
         } else {
             // Если новых угаданных слов нет
             $joke = $wrongGuessJokes[array_rand($wrongGuessJokes)];
             $response_text = "$username, $joke " . PHP_EOL . "Попробуй еще раз!";
         }
+
     }
 
     // Сохранение обновленного состояния игры
