@@ -7,6 +7,18 @@ require_once __DIR__ . '/dictionaries.php';
 // Загрузка переменных окружения
 loadEnv(__DIR__ . '/.env');
 
+// Проверяем, находимся ли мы в окружении разработки
+if (getenv('ENVIRONMENT') === 'development') {
+    // Включаем вывод всех ошибок
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
+    // Дополнительно, можно включить логирование ошибок
+    ini_set('log_errors', 1);
+    ini_set('error_log', '/path/to/error.log'); // Укажите путь, куда сохранять лог ошибок
+}
+
 // Получение токена из переменных окружения
 $token = getenv('BOT_TOKEN');
 $bot_name = getenv('BOT_NAME');
