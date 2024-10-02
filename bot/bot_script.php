@@ -119,7 +119,7 @@ function handleUpdate($update): void
         $username = $update['message']['from']['username'] ?? 'Аноним ';
     }
 
-    if (isAllowedCommand($message, $user_id)) { // Проверка на разрешенные команды
+    if (isAllowedCommand($message, $user_id, $chat_id)) { // Проверка на разрешенные команды
         // Обработка команд
         $response_text = command_processing($message, $username, $chat_id, $user_id);
     } // Обработка сообщений, отправленных боту или являющихся ответом на сообщение бота
@@ -172,7 +172,7 @@ function getHint($answer): string
 }
 
 // функция проверки разрешенных команд
-function isAllowedCommand($message, $user_id): bool
+function isAllowedCommand($message, $user_id, $chat_id): bool
 {
     global $allowed_commands, $admin_commands, $allowed_user_id;
 
@@ -189,8 +189,12 @@ function isAllowedCommand($message, $user_id): bool
     }
 
     // Проверяем команды, доступные только для администратора
-    if ($user_id === (int)$allowed_user_id && in_array($command, $admin_commands)) {
-        return true;
+    if (in_array($command, $admin_commands)) {
+        if ($user_id === (int)$allowed_user_id) {
+            return true;
+        }else{
+            sendMessage($chat_id, "Зря стараешься. Такие переговоры не твой уровень, не твой ранг. Мне нечего тебе предложить, молодой человек. Только соль и перец.♂️");
+        }
     }
 
     return false;
