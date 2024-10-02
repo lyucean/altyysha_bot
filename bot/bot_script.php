@@ -14,7 +14,7 @@ $allowed_user_id = getenv('ADMIN_USER_ID'); // USER_ID админа
 $game_state_file = __DIR__ . '/storage_game_state.json'; // файл для хранения состояния игры
 $riddles_file = __DIR__ . '/storage_riddles.json'; // фай для хранения загадок
 $allowed_commands = ['/stats', '/hint']; // Массив разрешенных команд
-$admin_commands = ['/start', '/end', '/add', '/delete', '/list'];  // Массив разрешенных команд для админа
+$admin_commands = ['/start', '/end', '/add', '/del', '/list'];  // Массив разрешенных команд для админа
 $riddles = loadRiddles(); // Загрузка загадок из JSON-файла
 // Конфигурация
 $use_webhook = getenv('USE_WEBHOOK') === 'true';// Установите true для использования вебхука, false для поллинга
@@ -278,7 +278,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Команда для удаления
-    elseif (str_starts_with($message, '/delete')) {
+    elseif (str_starts_with($message, '/del')) {
         $parts = explode(' ', $message, 2);
         if (count($parts) === 2) {
             if (deleteRiddle($parts[1])) {
@@ -287,7 +287,7 @@ function command_processing($message, $username, $chat_id, $user_id): string
                 $response_text = "Загадка не найдена.";
             }
         } else {
-            $response_text = "Использование: /delete_riddle [эмодзи]";
+            $response_text = "Использование: /del [эмодзи]";
         }
 
     }
