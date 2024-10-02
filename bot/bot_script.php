@@ -370,6 +370,11 @@ function updateScore(&$gameState, $userId, $points, $username) {
     return $gameState['score'][$userId];
 }
 
+// Очистка сообщения и перевод в нижний регистр
+function cleanMessage($message): string
+{
+    return mb_strtolower(preg_replace('/[^\p{L}\p{N}\s]/u', '', $message), 'UTF-8');
+}
 // Обработка обычных сообщений
 function message_processing($message, $username, $chat_id, $user_id): string
 {
@@ -394,15 +399,16 @@ function message_processing($message, $username, $chat_id, $user_id): string
     }
 
     // Получение правильного ответа и преобразование введенного пользователем ответа в нижний регистр
-    $correctAnswer = mb_strtolower($riddles[$gameState['current_emoji']], 'UTF-8');
-    $userAnswer = mb_strtolower($message, 'UTF-8');
+    $correctAnswer = cleanMessage($riddles[$gameState['current_emoji']]);
+    $userAnswer = cleanMessage($message);
 
     if ($userAnswer == $correctAnswer) { // Проверка на полное совпадение ответа
         // Обновление счета и выбор случайной шутки
         $currentScore = updateScore($gameState, $user_id, 5, $username);
         $joke = $correctGuessJokes[array_rand($correctGuessJokes)];
-        $response_text = "$username, $joke Это действительно \"$correctAnswer\". "
-            . PHP_EOL . " Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
+        $response_text = "$username, $joke "
+            . PHP_EOL . "Это действительно \"$correctAnswer\". "
+            . PHP_EOL . PHP_EOL . "Ты получаешь 5 баллов! Твой счет: $currentScore" . PHP_EOL;
 
         // Добавляем текущую загадку в список решенных
         $gameState['solved_riddles'][] = $gameState['current_emoji'];
