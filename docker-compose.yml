@@ -1,7 +1,7 @@
 
 services:
 
-  wordpress:
+  altyysha-wordpress:
     container_name: altyysha_blog_wp
     image: wordpress
     restart: unless-stopped
@@ -16,17 +16,17 @@ services:
       - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
     labels:
       - traefik.enable=true
-      - traefik.http.routers.wordpress.rule=Host(`altyysha.com`)
-      - traefik.http.routers.wordpress.entrypoints=websecure
-      - traefik.http.routers.wordpress.tls=true
-      - traefik.http.routers.wordpress.tls.certresolver=letsencrypt
+      - traefik.http.routers.altyysha-wordpress.rule=Host(`altyysha.com`)
+      - traefik.http.routers.altyysha-wordpress.entrypoints=websecure
+      - traefik.http.routers.altyysha-wordpress.tls=true
+      - traefik.http.routers.altyysha-wordpress.tls.certresolver=letsencrypt
       - traefik.http.services.wordpress.loadbalancer.server.port=80
     networks:
       - web
     profiles:
       - prod
 
-  mysql:
+  altyysha-mysql:
     container_name: altyysha_blog_mysql
     image: mysql:5.7
     restart: unless-stopped
