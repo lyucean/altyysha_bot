@@ -1,0 +1,101 @@
+name: Deployment Blog
+
+concurrency: production
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production  # использовать среду "production"
+
+    steps:
+      - name: "Инициализация репозитория"
+        uses: actions/checkout@v4
+
+      - name: "Заполнение переменных среды"
+        run: |
+          echo "WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}" >> .env
+          echo "WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}" >> .env
+          echo "WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+          
+          echo "ENVIRONMENT=${{ vars.ENVIRONMENT }}" >> .env
+          echo "BACKUPS_FOLDER=${{ vars.BACKUPS_FOLDER }}" >> .env
+
+      - name: "Создадим каталог проекта"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: mkdir -p /home/user/altyysha.com
+
+      - name: "Скопируйте .env в папку проекта."
+        run: mv .env ./app || ls ./app
+
+      - name: "Скопируйте файлы приложения на удаленный сервер."
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: "./*"
+          target: "/var/www/altyysha.com"
+
+  publish:
+    name: "Запуск контейнера"
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    environment: production  # использовать среду "production"
+    steps:
+      - name: "Создадим веб-сеть и запустите docker compose."
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            docker network ls | grep web || docker network create web
+            cd /var/www/altyysha.com/
+            # Добавляем команду для изменения прав доступа к папкам
+            chown -R www-data:www-data ./app/wordpress ./app/my_plugin ./app/my_theme
+            find ./app/wordpress ./app/my_plugin ./app/my_theme -type d -exec chmod 755 {} \;
+            find ./app/wordpress ./app/my_plugin ./app/my_theme -type f -exec chmod 644 {} \;
+            make update
+            docker compose ps
+
+  test:
+    name: "Проверим, что наш блог запущен"
+    runs-on: ubuntu-latest
+    needs: [publish]
+    steps:
+      - name: Check website
+        uses: wei/curl@v1
+        with:
+          args:  https://altyysha.com/
+
+  alert:
+    name: Alert
+    runs-on: ubuntu-latest
+    needs: [publish]
+    steps:
+      - name: "Отправить уведомление, что всё развернулось"
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ${{ github.actor }} создал commit:
+            Commit: ${{ github.event.commits[0].message }}
+
+            Репозиторий: ${{ github.repository }}
+
+            Изменения: https://github.com/${{ github.repository }}/commit/${{github.sha}}

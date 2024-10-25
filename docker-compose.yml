@@ -1,37 +1,88 @@
+
 services:
-  altyysha:
-    image: php:8.1-apache
-    container_name: altyysha-bot
+
+  wordpress:
+    container_name: altyysha_blog_wp
+    image: wordpress
     restart: unless-stopped
-    volumes:
-      - ./bot:/var/www/html
     environment:
-      - PHP_MEMORY_LIMIT=256M
-    networks:
-      - web
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+    volumes:
+      - ./app/wordpress:/var/www/html
+#      - ./app/my_plugin:/var/www/html/wp-content/plugins/my_plugin
+#      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
     labels:
       - traefik.enable=true
-      - traefik.http.routers.altyysha.rule=Host(`altyysha.com`)
-      - traefik.http.routers.altyysha.entrypoints=websecure
-      - traefik.http.routers.altyysha.tls=true
-      - traefik.http.routers.altyysha.tls.certresolver=letsencrypt
-      - traefik.http.services.altyysha.loadbalancer.server.port=80
-
-  altyysha-local:
-    image: php:8.1-apache
-    container_name: altyysha-bot-local
-    restart: unless-stopped
-    volumes:
-      - ./bot:/var/www/html
-    environment:
-      - PHP_MEMORY_LIMIT=256M
-    ports:
-      - "80:80"
+      - traefik.http.routers.wordpress.rule=Host(`altyysha.com`)
+      - traefik.http.routers.wordpress.entrypoints=websecure
+      - traefik.http.routers.wordpress.tls=true
+      - traefik.http.routers.wordpress.tls.certresolver=letsencrypt
+      - traefik.http.services.wordpress.loadbalancer.server.port=80
     networks:
-      - local
+      - web
+    profiles:
+      - prod
+
+  mysql:
+    container_name: altyysha_blog_mysql
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - altyysha-mysql-data:/var/lib/mysql
+    networks:
+      - web
+    profiles:
+      - prod
+
+  wordpress_dev:
+    container_name: altyysha_blog_wp_dev
+    image: wordpress:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"  # Пробрасываем порт 8080 на хосте к порту 80 внутри контейнера
+    environment:
+      WORDPRESS_DB_HOST: mysql_dev
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DEBUG: 1  # Включаем режим отладки WordPress
+    volumes:
+      - ./app/wordpress:/var/www/html  # Монтируем локальную папку с WordPress
+    networks:
+      - web
+    profiles:
+      - dev  # запускаем только в локальном окружении
+
+  mysql_dev:
+    container_name: altyysha_blog_mysql_dev
+    image: mariadb:10.5  # Используем MariaDB вместо MySQL
+    platform: linux/arm64  # Указываем платформу для ARM
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - altyysha-mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - web
+    profiles:
+      - dev
+
+volumes:
+  altyysha-mysql-data: # Определяем том для сохранения данных MySQL
 
 networks:
   web:
-    external: true
-  local:
-    driver: bridge
+    external: true # стандартная для всех на этом сервере
