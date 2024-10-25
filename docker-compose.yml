@@ -13,7 +13,7 @@ services:
     volumes:
       - ./app/wordpress:/var/www/html
 #      - ./app/my_plugin:/var/www/html/wp-content/plugins/my_plugin
-#      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
+      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
     labels:
       - traefik.enable=true
       - traefik.http.routers.wordpress.rule=Host(`altyysha.com`)
