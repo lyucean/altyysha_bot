@@ -35,7 +35,7 @@ restart: docker-down docker-up
 
 docker-up: ## Поднимем все контейнеры
 	@echo "$(PURPLE) Поднимем все контейнеры $(RESET)"
-	docker compose --env-file app/.env up -d
+	docker compose $(ENV) $(PROFILE) up -d
 
 docker-build:
 	@echo "$(PURPLE) Соберём образы $(RESET)"
