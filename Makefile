@@ -2,10 +2,10 @@
 .DEFAULT_GOAL := help
 
 # Подключим файл конфигурации
-include app/.env
+include .env
 
 # И укажем его для docker compose
-ENV = --env-file app/.env
+ENV = --env-file .env
 
 # Дата время
 BACKUP_DATETIME := $(shell date '+%Y-%m-%d')
@@ -35,7 +35,7 @@ restart: docker-down docker-up
 
 docker-up: ## Поднимем все контейнеры
 	@echo "$(PURPLE) Поднимем все контейнеры $(RESET)"
-	docker compose $(ENV) $(PROFILE) up -d
+	docker compose --env-file app/.env up -d
 
 docker-build:
 	@echo "$(PURPLE) Соберём образы $(RESET)"
