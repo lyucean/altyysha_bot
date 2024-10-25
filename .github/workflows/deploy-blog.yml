@@ -66,7 +66,7 @@ jobs:
             docker network ls | grep web || docker network create web
             cd /var/www/altyysha.com/
             # Добавляем команду для изменения прав доступа к папкам
-            chown -R www-data:www-data ./app/wordpress ./app/my_plugin ./app/my_theme
+            chown -R www-data:www-data ./app/wordpress ./app/my_plugin ./app/my_theme ./app/.env
             find ./app/wordpress ./app/my_plugin ./app/my_theme -type d -exec chmod 755 {} \;
             find ./app/wordpress ./app/my_plugin ./app/my_theme -type f -exec chmod 644 {} \;
             make update
