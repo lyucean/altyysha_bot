@@ -26,7 +26,7 @@ services:
     profiles:
       - prod
 
-  altyysha-mysql:
+  mysql:
     container_name: altyysha_blog_mysql
     image: mysql:5.7
     restart: unless-stopped
@@ -36,7 +36,7 @@ services:
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - altyysha-mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     networks:
       - web
     profiles:
@@ -72,7 +72,7 @@ services:
       MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
-      - altyysha-mysql-data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     ports:
       - "3306:3306"
     networks:
@@ -81,7 +81,7 @@ services:
       - dev
 
 volumes:
-  altyysha-mysql-data: # Определяем том для сохранения данных MySQL
+  mysql-data: # Определяем том для сохранения данных MySQL
 
 networks:
   web:
