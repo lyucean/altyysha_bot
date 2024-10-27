@@ -6,7 +6,7 @@ services:
     image: wordpress
     restart: unless-stopped
     environment:
-      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_HOST: altyysha-mysql
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
@@ -26,7 +26,7 @@ services:
     profiles:
       - prod
 
-  mysql:
+  altyysha-mysql:
     container_name: altyysha_blog_mysql
     image: mysql:5.7
     restart: unless-stopped
