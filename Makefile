@@ -52,7 +52,7 @@ docker-down: ## Остановим контейнеры
 # Команды для работы с дампами на продакшене ----------------------------------------------------------------------------
 backup-db:  ## Снимем дамп с БД
 	@echo "$(PURPLE) Снимем дамп с БД $(RESET)"
-	@docker compose $(ENV) exec altyysha-mysql sh -c 'exec mysqldump -u root -p"${MYSQL_ROOT_PASSWORD}" "${WORDPRESS_DB_NAME}"' > "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_LS.sql"
+	@docker compose $(ENV) exec altyysha-mysql sh -c 'exec mysqldump -u root -p"${MYSQL_ROOT_PASSWORD}" "${WORDPRESS_DB_NAME}"' > "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_ALT.sql"
 
 backup-file:  ## Снимем дамп файлов с папки wordpress
 	@echo "$(PURPLE) Создадим архив файлов $(RESET)"
@@ -66,8 +66,8 @@ backup-file:  ## Снимем дамп файлов с папки wordpress
 
 import-backup:  ## Импорт БД из сегодняшнего дампа (удобно восстанавливать, если что-то сломал в настройках)
 	@echo "$(PURPLE) Импорт БД из дампа $(RESET)"
-	@if [ -f "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_LS.sql" ]; then \
-		docker compose $(ENV) exec -T altyysha-mysql sh -c 'exec mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" "$(WORDPRESS_DB_NAME)"' < "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_LS.sql"; \
+	@if [ -f "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_ALT.sql" ]; then \
+		docker compose $(ENV) exec -T altyysha-mysql sh -c 'exec mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" "$(WORDPRESS_DB_NAME)"' < "${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_ALT.sql"; \
 	else \
 		echo "Дампа за сегодня нет!"; \
 	fi
@@ -96,7 +96,7 @@ fresh-backup:
 fetch-backup: fresh-backup docker-up-mysql # Скачаем дамп с удаленного сервера на локальную машинуЗапускаем mysql заранее, чтоб успел развернутся
 	@mkdir -p backup
 	@echo "$(PURPLE) Скачиваем дамп с удаленного сервера $(RESET)"
-	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_LS.sql ./backup
+	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_ALT.sql ./backup
 	@echo "$(PURPLE) Скачиваем архив с удаленного сервера $(RESET)"
 	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/${BACKUP_DATETIME}_LS.file.gz ./backup
 
@@ -112,7 +112,7 @@ docker-up-mysql: ## Поднимем базу данных для разрабо
 
 update-dump:  ## Импорт БД из дампа
 	@echo "$(PURPLE) Импорт БД из дампа $(RESET)"
-	@docker compose $(ENV) exec -T mysql_dev sh -c 'exec mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" "$(WORDPRESS_DB_NAME)"' < ./backup/$(BACKUP_DATETIME)_LS.sql;
+	@docker compose $(ENV) exec -T mysql_dev sh -c 'exec mysql -u root -p"$(MYSQL_ROOT_PASSWORD)" "$(WORDPRESS_DB_NAME)"' < ./backup/$(BACKUP_DATETIME)_ALT.sql;
 
 update-urls:
 	@echo "$(PURPLE) Обновление URL-адресов WordPress для окружения $(ENVIRONMENT)... $(RESET)"
