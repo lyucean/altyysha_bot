@@ -1,0 +1,408 @@
+html :where(.wp-block) {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+/* editor-style.css */
+body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--bs-body-color);
+    padding: 2rem 4rem;
+}
+
+/* Заголовки */
+h1 {
+    font-size: 2.5rem;      /* 40px при базовом размере 16px */
+    font-weight: 800;
+    margin: 1.5em 0 0.5em;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 2rem;        /* 32px */
+    font-weight: 700;
+    margin: 1.4em 0 0.5em;
+    line-height: 1.25;
+}
+
+h3 {
+    font-size: 1.5rem;      /* 24px */
+    font-weight: 600;
+    margin: 1.3em 0 0.5em;
+    line-height: 1.3;
+}
+
+h4 {
+    font-size: 1.25rem;     /* 20px */
+    font-weight: 600;
+    margin: 1.2em 0 0.5em;
+    line-height: 1.35;
+}
+
+h5 {
+    font-size: 1.125rem;    /* 18px */
+    font-weight: 600;
+    margin: 1.1em 0 0.5em;
+    line-height: 1.4;
+}
+
+h6 {
+    font-size: 1rem;        /* 16px */
+    font-weight: 600;
+    margin: 1em 0 0.5em;
+    line-height: 1.4;
+    color: var(--bs-secondary);
+}
+
+/* Блоки кода */
+.wp-block-kevinbatdorf-code-block-pro {
+    margin-bottom: 1.5em;
+}
+
+/* Цитаты */
+blockquote p {
+    margin-bottom: 0em;
+}
+
+/* подпись к изображению */
+.wp-element-caption {
+    font-size: .875em;
+    color: var(--bs-secondary-color);
+}
+
+/* Ссылки */
+a {
+    color: #3b49df;
+}
+
+p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+a:hover {
+    color: #1c2ac3;
+    text-decoration: none;
+}
+
+/* Списки */
+ul,
+ol {
+    margin: 1em 0;
+    padding-left: 1.2em;
+}
+ol ul,
+ul ol{
+    margin: .1em 0;
+    padding-left: .5em;
+}
+
+li {
+    margin: 0.5em 0;
+}
+
+li li {
+    margin: 0.2em 0;
+}
+
+/* Изображения */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.375rem;
+    display: block;
+}
+
+/* Блоки кода */
+pre {
+    background: #f6f8fa;
+    border-radius: 0.375rem;
+    padding: 1em;
+    margin: 1.5em 0;
+    overflow-x: auto;
+}
+
+code {
+    background: #f6f8fa;
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* Цитаты */
+/* Цитаты */
+blockquote {
+    border-left: 4px solid var(--bs-success);
+    background: rgba(var(--bs-success-rgb), 0.05);
+    padding: 1em 1em;
+    font-style: normal;
+    font-size: 0.9em;
+    margin: 1.2rem 0;
+    border-radius: 0 0.375rem 0.375rem 0;
+    box-shadow: inset 0 1px 3px rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity));
+}
+
+blockquote p {
+    margin-bottom: 0.5em;
+    color: var(--bs-body-color);
+    font-size: 1.05em;
+    line-height: 1.7;
+}
+
+blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+blockquote p strong {
+    color: var(--bs-emphasis-color);
+}
+
+/* Авторство цитаты */
+blockquote p:last-child:not(:first-child) {
+    font-size: 0.8em;
+    color: var(--bs-secondary-color);
+    text-align: right;
+    margin-top: 0.75em;
+    border-top: 1px solid var(--bs-border-color);
+    padding-top: 0.75em;
+}
+
+/* Горизонтальная линия */
+hr {
+    border: 0;
+    height: 1px;
+    background: var(--bs-border-color);
+    margin: 2em 0;
+}
+
+/* Таблицы */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+}
+
+th,
+td {
+    padding: 0.75em;
+    border: 1px solid var(--bs-border-color);
+}
+
+th {
+    background: #f6f8fa;
+}
+
+/*  Стилизация блока "Каткое описание" */
+.wp-block-site-tagline {
+    border-left: 4px solid var(--bs-primary);
+    padding: 20px 25px;
+    margin: 2rem 0;
+    border-radius: 0 0.375rem 0.375rem 0;
+    color: var(--bs-body-color);
+    background: rgba(var(--bs-primary-rgb), 0.03);
+    border-left-color: var(--bs-primary);
+}
+
+.wp-block-site-tagline::before {
+    content: "О чём эта статья?";
+    display: block;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--bs-heading-color);
+}
+
+.wp-block-site-tagline {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Hover эффект */
+.wp-block-site-tagline:hover {
+    background: var(--bs-tertiary-bg);
+    transition: background-color 0.2s ease;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .wp-block-site-tagline {
+        padding: 15px 20px;
+        margin: 1.5rem 0;
+    }
+
+    .wp-block-site-tagline::before {
+        font-size: 1.1rem;
+    }
+}
+
+
+/* ==========================================================================
+   Стилизация блока Details WordPress
+   ========================================================================== */
+.wp-block-details {
+    border: 1px solid var(--bs-primary); /* Добавляем бордюр */
+    background-color: transparent; /* Убираем фон */
+    border-radius: var(--bs-border-radius); /* Закругляем углы */
+    padding: 0.25rem 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.wp-block-details[open] {
+    border-color: var(--bs-primary); /* Меняем цвет бордюра при раскрытии */
+}
+
+/* Стилизация заголовка summary */
+.wp-block-details summary {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    font-weight: 500;
+    color: var(--bs-primary);
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    user-select: none;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    outline: none; /* Убираем синюю рамку */
+}
+
+.wp-block-details summary:focus {
+    outline: none;
+    box-shadow: none; /* Добавляем мягкую подсветку */
+}
+
+.wp-block-details summary:hover {
+    color: var(--bs-body-color); /* Меняем цвет текста при наведении */
+    border-color: var(--bs-primary); /* Цвет бордюра */
+}
+
+
+/* Кастомная стрелка */
+.wp-block-details summary::before {
+    content: '+';
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+    margin-top: -0.2rem;
+    transition: transform 0.2s ease;
+}
+
+.wp-block-details[open] summary::before {
+    content: '−';
+    transform: rotate(90deg);
+}
+
+details[open] > summary {
+    border-color: var(--bs-primary); /* Цвет бордюра */
+}
+
+/* Контент внутри details */
+.wp-block-details > *:not(summary) {
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+    color: var(--bs-body-color); /* Цвет текста */
+}
+
+/* Вложенные details */
+.wp-block-details .wp-block-details {
+    margin: 0.75rem 0;
+    border-left: 3px solid var(--bs-primary); /* Выделение вложенных блоков */
+}
+
+/* Темная тема */
+[data-bs-theme="dark"] .wp-block-details {
+    border-color: var(--bs-gray-700); /* Цвет бордюра */
+}
+
+[data-bs-theme="dark"] .wp-block-details summary {
+    color: var(--bs-warning); /* Цвет заголовка */
+    border-bottom-color: transparent; /* Цвет нижнего бордюра */
+}
+
+[data-bs-theme="dark"] .wp-block-details summary:hover {
+    color: var(--bs-white); /* Цвет текста при наведении */
+    border-bottom-color: var(--bs-warning); /* Цвет бордюра при наведении */
+}
+
+[data-bs-theme="dark"] details[open] > summary {
+    border-bottom-color: var(--bs-warning);
+}
+
+[data-bs-theme="dark"] .wp-block-details > *:not(summary) {
+    color: var(--bs-gray-300);
+}
+
+/* Анимация при открытии/закрытии */
+.wp-block-details > *:not(summary) {
+    animation: details-show 0.2s ease-in-out;
+}
+
+@keyframes details-show {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .wp-block-details {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .wp-block-details > *:not(summary) {
+        padding: 0.5rem 0 0 1rem;
+    }
+}
+
+/* Центрирование подписей к изображениям */
+.wp-element-caption,
+.wp-caption-text {
+    text-align: center !important;
+    margin: 0.5em auto !important;
+    width: 100% !important;
+}
+
+.wp-block-image figcaption {
+    text-align: center !important;
+    margin: 0.5em auto !important;
+    width: 100% !important;
+}
+
+figure.aligncenter {
+    text-align: center !important;
+}
+
+figure.aligncenter figcaption {
+    text-align: center !important;
+}
+
+/* Стилизация блока изображения с подписью только для single-post */
+.wp-block-image figcaption {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0 !important;
+    padding: 0 0.5rem;
+}
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .wp-block-image {
+        padding: 0.375rem;
+        margin: 1rem 0;
+    }
+
+    .wp-block-image img {
+        margin-bottom: 0.375rem;
+    }
+
+    .wp-block-image figcaption {
+        margin-top: 0.375rem !important;
+        padding: 0 0.375rem;
+    }
+}

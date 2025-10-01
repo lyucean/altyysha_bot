@@ -1,0 +1,67 @@
+/* ==========================================================================
+   Блок Спойлера (Simple Style)
+   ========================================================================== */
+.spoiler-text {
+    background-color: var(--bs-gray-300) !important;
+    color: transparent !important;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+/* При наведении/клике - показываем текст */
+.spoiler-text:hover,
+.spoiler-text.revealed {
+    background-color: transparent !important;
+    color: inherit !important;
+}
+
+/* Анимация раскрытия */
+.spoiler-text.revealing {
+    animation: spoiler-reveal 0.4s ease-out forwards;
+}
+
+@keyframes spoiler-reveal {
+    0% {
+        background-color: var(--bs-gray-300);
+        color: transparent;
+    }
+    100% {
+        background-color: transparent;
+        color: inherit;
+    }
+}
+
+/* Темная тема */
+[data-bs-theme="dark"] .spoiler-text {
+    background-color: var(--bs-gray-700) !important;
+}
+
+[data-bs-theme="dark"] .spoiler-text.revealing {
+    animation: spoiler-reveal-dark 0.4s ease-out forwards;
+}
+
+@keyframes spoiler-reveal-dark {
+    0% {
+        background-color: var(--bs-gray-700);
+        color: transparent;
+    }
+    100% {
+        background-color: transparent;
+        color: inherit;
+    }
+}
+
+/* Для мобильных устройств */
+@media (max-width: 768px) {
+    .spoiler-text:hover {
+        background-color: var(--bs-gray-300) !important;
+        color: transparent !important;
+    }
+
+    [data-bs-theme="dark"] .spoiler-text:hover {
+        background-color: var(--bs-gray-700) !important;
+    }
+}

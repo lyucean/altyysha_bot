@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Блок Спойлера для админки
+   ========================================================================== */
+.block-editor-rich-text__editable .spoiler-text {
+    background-color: var(--bs-gray-200) !important;
+    color: var(--bs-gray-500) !important;
+    position: relative;
+}
+
+/* При наведении/клике - показываем текст */
+.spoiler-text:hover,
+.spoiler-text.revealed {
+    background-color: transparent !important;
+    color: inherit !important;
+}

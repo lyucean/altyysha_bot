@@ -1,0 +1,54 @@
+
+/* Стилизация блока "Краткое описание статьи" */
+.summary {
+    background: rgba(var(--bs-primary-rgb), 0.05);
+    border-left: 4px solid var(--bs-primary);
+    padding: 20px 25px;
+    margin: 2rem 0;
+    border-radius: 0 0.375rem 0.375rem 0;
+    color: var(--bs-body-color);
+}
+
+.summary::before {
+    content: "О чём эта статья?";
+    display: block;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: var(--bs-heading-color);
+}
+
+.summary p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
+
+/* Адаптивность для мобильных устройств */
+@media screen and (max-width: 768px) {
+    .summary {
+        padding: 10px 10px;
+        margin: 1.5rem -.4rem;
+    }
+
+    .summary::before {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary p {
+        font-size: 0.95rem;
+    }
+}
+
+/* Специфичные стили для светлой темы */
+[data-bs-theme="light"] .summary {
+    background: rgba(var(--bs-primary-rgb), 0.05);
+    border-left-color: var(--bs-primary);
+}
+
+/* Специфичные стили для темной темы */
+[data-bs-theme="dark"] .summary {
+    background: rgba(var(--bs-primary-rgb), 0.15);
+    border-left-color: var(--bs-primary-border-subtle);
+}

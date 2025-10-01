@@ -13,7 +13,7 @@ services:
     volumes:
       - ./app/wordpress:/var/www/html
 #      - ./app/my_plugin:/var/www/html/wp-content/plugins/my_plugin
-#      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
+      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
     labels:
       - traefik.enable=true
       - traefik.http.routers.altyysha-wordpress.rule=Host(`altyysha.com`)
@@ -56,6 +56,7 @@ services:
       WORDPRESS_DEBUG: 1  # Включаем режим отладки WordPress
     volumes:
       - ./app/wordpress:/var/www/html  # Монтируем локальную папку с WordPress
+      - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
     networks:
       - web
     profiles:
