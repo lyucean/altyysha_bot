@@ -56,7 +56,7 @@ backup-db:  ## Снимем дамп с БД
 
 backup-file:  ## Снимем дамп файлов с папки wordpress
 	@echo "$(PURPLE) Создадим архив файлов $(RESET)"
-	tar --warning=no-file-changed -czf ${BACKUPS_FOLDER}/${BACKUP_DATETIME}_LS.file.gz \
+	tar --warning=no-file-changed -czf ${BACKUPS_FOLDER}/${BACKUP_DATETIME}_ALT.file.gz \
 		--exclude='app/wordpress/wp-content/cache' \
 		--exclude='app/wordpress/wp-content/backup' \
 		--exclude='app/wordpress/wp-content/upgrade-temp-backup' \
@@ -98,13 +98,13 @@ fetch-backup: fresh-backup docker-up-mysql # Скачаем дамп с удал
 	@echo "$(PURPLE) Скачиваем дамп с удаленного сервера $(RESET)"
 	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/$(BACKUP_DATETIME)_ALT.sql ./backup
 	@echo "$(PURPLE) Скачиваем архив с удаленного сервера $(RESET)"
-	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/${BACKUP_DATETIME}_LS.file.gz ./backup
+	sshpass -p"${SSH_PASSWORD}" scp ${SSH_USER}@${SSH_HOST}:${BACKUPS_FOLDER}/${BACKUP_DATETIME}_ALT.file.gz ./backup
 
 update-backup: fetch-backup # Распакуем архив на локальной машине
 	@echo "$(PURPLE) Удаляем все лишние файлы в папке перед распаковкой $(RESET)"
 	rm -rf ./app/wordpress/*
 	@echo "$(PURPLE) Распаковываем архив на локальной машине $(RESET)"
-	tar -xzf ./backup/${BACKUP_DATETIME}_LS.file.gz -C ./app/wordpress
+	tar -xzf ./backup/${BACKUP_DATETIME}_ALT.file.gz -C ./app/wordpress
 
 docker-up-mysql: ## Поднимем базу данных для разработки
 	@echo "$(PURPLE) Поднимем базу данных $(RESET)"
