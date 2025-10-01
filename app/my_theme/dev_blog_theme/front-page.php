@@ -334,4 +334,159 @@
     <div class="skills-decoration flower-top"></div>
 </section>
 
+<!-- Блок "Увлечения" -->
+<section id="hobbies" class="hobbies-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">
+                <i class="fas fa-sparkles me-2"></i>Моя душа
+            </span>
+            <h2 class="section-title">Увлечения и хобби</h2>
+        </div>
+
+        <div class="hobbies-grid">
+            <!-- Аниме -->
+            <div class="hobby-card main-hobby">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/600x400/ff6b6b/ffffff?text=Аниме+мания+🍜" alt="Аниме" class="img-fluid">
+                    <div class="hobby-overlay">
+                        <div class="hobby-icon">
+                            <i class="fas fa-tv"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Аниме-зависимость</h3>
+                    <p class="hobby-description">
+                        От Наруто до Миядзаки — потребляю аниме килотоннами! Атака титанов,
+                        Тетрадь смерти, и ещё куча всего. Да, я та девочка, которая плачет
+                        над мультиками и гордится этим.
+                    </p>
+                    <div class="hobby-tags">
+                        <span class="hobby-tag">Наруто-бегу</span>
+                        <span class="hobby-tag">Миядзаки ♥</span>
+                        <span class="hobby-tag">Титаны атакуют</span>
+                        <span class="hobby-tag">Лайт Ягами</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Танцы -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/4ecdc4/ffffff?text=Танцы+💃" alt="Танцы" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Танцевальная машинка</h3>
+                    <p class="hobby-description">
+                        Бальные, танго, вальс, бачата, хастл — я как швейцарский нож танцев!
+                        Поставили с десяток свадебных танцев. А ещё, мы танцевальная пара.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Кубик Рубика -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/45b7d1/ffffff?text=Кубик+🧩" alt="Кубик Рубика" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Кубик-ниндзя</h3>
+                    <p class="hobby-description">
+                        Собираю кубик Рубика за секунды и поражаю окружающих.
+                        Да, я та девочка, которая может решить твои проблемы быстрее,
+                        чем ты их озвучишь.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Настолки -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/f7b731/ffffff?text=Настолки+🎲" alt="Настольные игры" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Королева настолок</h3>
+                    <p class="hobby-description">
+                        У нас дома целый сервант настольных игр! Я та подруга,
+                        которая знает правила к 50+ играм и точно знаю как
+                        устроить игровой вечер.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Спорт -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/5f27cd/ffffff?text=Спорт+🏓" alt="Спорт" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Движение - это жизнь</h3>
+                    <p class="hobby-description">
+                        Настольный теннис, баскетбол, ультимат в универе —
+                        обыгрываю многих и не стесняюсь этим хвастаться.
+                        Веревочные парки, поездки, пляж, театр — любой разный движ!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Творчество -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/a55eea/ffffff?text=Творчество+🎨" alt="Творчество" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Творческий хаос</h3>
+                    <p class="hobby-description">
+                        Играю на гитаре, пишу стихи, рисую. Недавно муж научил паять —
+                        теперь собираем умную гирлянду! Кто сказал, что программисты
+                        не умеют в творчество?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Гарри Поттер и сериалы -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/2d3436/ffffff?text=Сериалы+📺" alt="Сериалы" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Сериальный маньяк</h3>
+                    <p class="hobby-description">
+                        Гарри Поттер — моя религия, а сериалы потребляю тоннами в секунду.
+                        Если нужна рекомендация — я ваш человек! Знаю всё от "Друзей"
+                        до корейских дорам.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Животные -->
+            <div class="hobby-card">
+                <div class="hobby-image">
+                    <img src="https://placehold.co/400x300/fd79a8/ffffff?text=Котики+🐱" alt="Животные" class="img-fluid">
+                </div>
+                <div class="hobby-content">
+                    <h3 class="hobby-title">Дай кота!</h3>
+                    <p class="hobby-description">
+                        Обожаю котов и собак, готова передержать вашего питомца!
+                        Обещаю тискать и не выпускать из рук. Предупреждаю сразу —
+                        может не захотеть домой.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Цитата-вдохновение -->
+        <div class="inspiration-quote mt-5">
+            <div class="quote-content">
+                <i class="fas fa-quote-left quote-icon"></i>
+                <blockquote class="quote-text">
+                    Жизнь слишком коротка, чтобы не попробовать всё интересное.
+                </blockquote>
+                <cite class="quote-author">— Даша, прекрасная прекрасность</cite>
+            </div>
+        </div>
+    </div>
+</section>
+
 <?php get_footer(); ?>
