@@ -1,63 +1,39 @@
-</main>
-<?php wp_footer(); ?>
-<footer class="py-5 mt-5 w-100 footer-custom">
+<!-- Футер в природном стиле -->
+<footer class="footer-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12">
 
-                <!-- Добавляем описание -->
-                <div class="text-center mb-4">
-                    <p class="footer-description">
-                        Блог ИТ-директора о том, как не поехать кукухой в мире технологий.
-                        <br/>
-                        Практические советы и откровенные истории без воды и розовых соплей.
-                    </p>
+
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="footer-copyright">
+                    &copy; <?php echo date('Y'); ?> Сделано с <i class="fas fa-heart text-danger"></i> для Дашеньки
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="footer-nature-elements">
+                    <i class="fas fa-leaf"></i>
+                    <i class="fas fa-butterfly"></i>
+                    <i class="fas fa-flower"></i>
                 </div>
-
-                <!-- Социальные сети  -->
-                <div class="d-flex justify-content-center gap-4 mb-4">
-                    <a href="https://www.instagram.com/altyysha"
-                       class="social-icon instagram-icon"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Instagram">
-                        <i class="bi bi-instagram"></i>
-                    </a>
-
-                    <a href="https://t.me/altyysha"
-                       class="social-icon telegram-icon"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Telegram">
-                        <i class="bi bi-telegram"></i>
-                    </a>
-
-                    <a href="mailto:forever19192@yandex.ru"
-                       class="social-icon email-icon"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Email">
-                        <i class="bi bi-envelope"></i>
-                    </a>
-
-                    <a href="<?php bloginfo('rss2_url'); ?>"
-                       class="social-icon rss-icon"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="RSS Feed">
-                        <i class="bi bi-rss"></i>
-                    </a>
-                </div>
-
-                <div class="text-center">
-                    <p class="footer-copyright">
-                        © Валентин Панченко, <?php echo date('Y'); ?>
-                    </p>
-                </div>
-
             </div>
         </div>
     </div>
+
+    <!-- Декоративные элементы -->
+    <div class="footer-decoration leaf-decoration-1"></div>
+    <div class="footer-decoration leaf-decoration-2"></div>
+    <div class="footer-decoration cloud-decoration"></div>
 </footer>
+
+<!-- Плавающие частицы (как в фильмах Миядзаки) -->
+<div class="floating-particles">
+    <div class="particle particle-1"></div>
+    <div class="particle particle-2"></div>
+    <div class="particle particle-3"></div>
+    <div class="particle particle-4"></div>
+    <div class="particle particle-5"></div>
+</div>
+
+<?php wp_footer(); ?>
 </body>
 </html>
