@@ -2,3 +2,5 @@
 /.env
 app/.env
 /bot/.env
+/app/wordpress
+/backup/*
