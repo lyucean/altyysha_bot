@@ -348,7 +348,7 @@
             <!-- Аниме -->
             <div class="hobby-card main-hobby">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/600x400/ff6b6b/ffffff?text=Аниме+мания+🍜" alt="Аниме" class="img-fluid">
+                    <img src="https://placehold.co/600x400/ff6b6b/ffffff?text=Аниме+мания" alt="Аниме" class="img-fluid">
                     <div class="hobby-overlay">
                         <div class="hobby-icon">
                             <i class="fas fa-tv"></i>
@@ -374,7 +374,7 @@
             <!-- Танцы -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/4ecdc4/ffffff?text=Танцы+💃" alt="Танцы" class="img-fluid">
+                    <img src="https://placehold.co/400x300/4ecdc4/ffffff?text=Танцы" alt="Танцы" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Танцевальная машинка</h3>
@@ -388,7 +388,7 @@
             <!-- Кубик Рубика -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/45b7d1/ffffff?text=Кубик+🧩" alt="Кубик Рубика" class="img-fluid">
+                    <img src="https://placehold.co/400x300/45b7d1/ffffff?text=Кубик" alt="Кубик Рубика" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Кубик-ниндзя</h3>
@@ -403,7 +403,7 @@
             <!-- Настолки -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/f7b731/ffffff?text=Настолки+🎲" alt="Настольные игры" class="img-fluid">
+                    <img src="https://placehold.co/400x300/f7b731/ffffff?text=Настолки" alt="Настольные игры" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Королева настолок</h3>
@@ -418,7 +418,7 @@
             <!-- Спорт -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/5f27cd/ffffff?text=Спорт+🏓" alt="Спорт" class="img-fluid">
+                    <img src="https://placehold.co/400x300/5f27cd/ffffff?text=Спорт" alt="Спорт" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Движение - это жизнь</h3>
@@ -433,7 +433,7 @@
             <!-- Творчество -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/a55eea/ffffff?text=Творчество+🎨" alt="Творчество" class="img-fluid">
+                    <img src="https://placehold.co/400x300/a55eea/ffffff?text=Творчество" alt="Творчество" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Творческий хаос</h3>
@@ -448,7 +448,7 @@
             <!-- Гарри Поттер и сериалы -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/2d3436/ffffff?text=Сериалы+📺" alt="Сериалы" class="img-fluid">
+                    <img src="https://placehold.co/400x300/2d3436/ffffff?text=Сериалы" alt="Сериалы" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Сериальный маньяк</h3>
@@ -463,7 +463,7 @@
             <!-- Животные -->
             <div class="hobby-card">
                 <div class="hobby-image">
-                    <img src="https://placehold.co/400x300/fd79a8/ffffff?text=Котики+🐱" alt="Животные" class="img-fluid">
+                    <img src="https://placehold.co/400x300/fd79a8/ffffff?text=Котики" alt="Животные" class="img-fluid">
                 </div>
                 <div class="hobby-content">
                     <h3 class="hobby-title">Дай кота!</h3>
