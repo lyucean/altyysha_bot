@@ -14,6 +14,7 @@ services:
       - ./app/wordpress:/var/www/html
 #      - ./app/my_plugin:/var/www/html/wp-content/plugins/my_plugin
       - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     labels:
       - traefik.enable=true
       - traefik.http.routers.altyysha-wordpress.rule=Host(`altyysha.com`)
@@ -57,6 +58,7 @@ services:
     volumes:
       - ./app/wordpress:/var/www/html  # Монтируем локальную папку с WordPress
       - ./app/my_theme:/var/www/html/wp-content/themes/my_theme
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
       - web
     profiles:
