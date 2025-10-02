@@ -481,9 +481,9 @@
             <div class="quote-content">
                 <i class="fas fa-quote-left quote-icon"></i>
                 <blockquote class="quote-text">
-                    Жизнь слишком коротка, чтобы не попробовать всё интересное.
+                    Жизнь слишком коротка, чтобы не попробовать всё интересное
                 </blockquote>
-                <cite class="quote-author">— Даша, прекрасная прекрасность</cite>
+                <cite class="quote-author">— Даша, моя прекрасная прекрасность</cite>
             </div>
         </div>
     </div>

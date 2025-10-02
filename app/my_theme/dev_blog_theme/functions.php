@@ -106,5 +106,3 @@ function setup_birthday_pages() {
 add_action('after_switch_theme', 'setup_birthday_pages');
 
 
-?>
-

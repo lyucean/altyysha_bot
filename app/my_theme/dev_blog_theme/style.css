@@ -391,9 +391,9 @@ body {
 
 .section-badge {
     display: inline-block;
-    background: var(--light-green);
-    color: white;
-    padding: 8px 20px;
+    background: transparent;
+    color: transparent;
+    padding: 0;
     border-radius: 25px;
     font-size: 0.9rem;
     font-weight: 500;
@@ -1590,7 +1590,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 0;
     border-radius: 15px;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -2046,6 +2046,11 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
     font-size: 0.9rem;
+    padding: 10px 0;
+}
+
+.footer-social {
+    padding: 10px 0;
 }
 
 .footer-nature-elements {
@@ -2204,3 +2209,5 @@ body {
         text-align: center;
     }
 }
+
+

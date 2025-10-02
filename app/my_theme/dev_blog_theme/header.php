@@ -15,7 +15,7 @@
 <!-- Навигация -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#home">
+        <a class="navbar-brand" href="/">
             <i class="fas fa-leaf"></i>Дашенька
         </a>
 
@@ -26,22 +26,19 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#home">Главная</a>
+                    <a class="nav-link" href="/">Главная</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#about">Обо мне</a>
+                    <a class="nav-link" href="/#about">Обо мне</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#skills">Навыки</a>
+                    <a class="nav-link" href="/#skills">Навыки</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#portfolio">Блог</a>
+                    <a class="nav-link" href="<?php echo get_post_type_archive_link('post'); ?>">Блог</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#hobbies">Увлечения</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Контакты</a>
+                    <a class="nav-link" href="/#hobbies">Увлечения</a>
                 </li>
             </ul>
         </div>
