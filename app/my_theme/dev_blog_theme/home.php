@@ -104,19 +104,27 @@
         <!-- Пагинация -->
         <?php if ($posts_query->max_num_pages > 1) : ?>
             <div class="blog-pagination-wrapper">
-                <nav class="blog-pagination">
+                <nav class="blog-pagination" aria-label="Навигация по страницам блога">
                     <?php
                     echo paginate_links(array(
                             'total' => $posts_query->max_num_pages,
                             'current' => $paged,
-                            'prev_text' => '<i class="fas fa-chevron-left"></i> Назад',
-                            'next_text' => 'Вперёд <i class="fas fa-chevron-right"></i>',
-                            'type' => 'list'
+                            'prev_text' => '<i class="fas fa-chevron-left"></i> <span>Назад</span>',
+                            'next_text' => '<span>Вперёд</span> <i class="fas fa-chevron-right"></i>',
+                            'type' => 'list',
+                            'show_all' => false,
+                            'end_size' => 1,
+                            'mid_size' => 2,
+                            'add_args' => false,
+                            'add_fragment' => '',
+                            'before_page_number' => '',
+                            'after_page_number' => ''
                     ));
                     ?>
                 </nav>
             </div>
         <?php endif; ?>
+
 
         <?php wp_reset_postdata(); ?>
     </div>
