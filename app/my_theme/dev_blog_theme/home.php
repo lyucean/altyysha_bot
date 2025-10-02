@@ -8,9 +8,6 @@
                 <i class="fas fa-pen-fancy me-2"></i>Мои мысли
             </span>
             <h1 class="section-title">Блог Дашеньки</h1>
-            <p class="section-subtitle">
-                Здесь я делюсь своими мыслями о коде, жизни и всём на свете
-            </p>
         </div>
     </div>
 
