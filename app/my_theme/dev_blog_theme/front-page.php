@@ -192,7 +192,7 @@
 
                 <div class="tool-item" data-tooltip="Контейнеризация и деплой">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/2496ed/ffffff?text=🐳" alt="Docker">
+                        <img src="https://placehold.co/50x50/2496ed/ffffff?text=DC" alt="Docker">
                     </div>
                     <span class="tool-name">Docker</span>
                     <div class="tool-experience">3+ лет</div>
@@ -224,7 +224,7 @@
 
                 <div class="tool-item" data-tooltip="Composer пакеты и зависимости">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/885630/ffffff?text=📦" alt="Composer">
+                        <img src="https://placehold.co/50x50/885630/ffffff?text=COMP" alt="Composer">
                     </div>
                     <span class="tool-name">Composer</span>
                     <div class="tool-experience">4+ лет</div>
@@ -256,15 +256,15 @@
 
                 <div class="tool-item" data-tooltip="Linux серверы, SSH">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/fcc624/333333?text=🐧" alt="Linux">
+                        <img src="https://placehold.co/50x50/fcc624/333333?text=LNX" alt="Linux">
                     </div>
                     <span class="tool-name">Linux</span>
                     <div class="tool-experience">4+ лет</div>
                 </div>
 
-                <div class="tool-item" data-tooltip="Webpack, Vite сборка">
+                <div class="tool-item" data-tooltip="Webpack">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/8dd6f9/333333?text=⚡" alt="Build Tools">
+                        <img src="https://placehold.co/50x50/1d78c1/fff?text=BUILD" alt="Build Tools">
                     </div>
                     <span class="tool-name">Build Tools</span>
                     <div class="tool-experience">2+ лет</div>
@@ -272,7 +272,7 @@
 
                 <div class="tool-item" data-tooltip="Postman, Insomnia">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/ff6c37/ffffff?text=📡" alt="API Testing">
+                        <img src="https://placehold.co/50x50/ff6c37/ffffff?text=TEST" alt="API Testing">
                     </div>
                     <span class="tool-name">API Testing</span>
                     <div class="tool-experience">3+ лет</div>
@@ -280,7 +280,7 @@
 
                 <div class="tool-item" data-tooltip="SOLID, паттерны проектирования">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/6f42c1/ffffff?text=🏗️" alt="Architecture">
+                        <img src="https://placehold.co/50x50/6f42c1/ffffff?text=Arch" alt="Architecture">
                     </div>
                     <span class="tool-name">Architecture</span>
                     <div class="tool-experience">3+ лет</div>
@@ -288,7 +288,7 @@
 
                 <div class="tool-item" data-tooltip="CI/CD, автоматизация">
                     <div class="tool-icon">
-                        <img src="https://placehold.co/50x50/2088ff/ffffff?text=🚀" alt="DevOps">
+                        <img src="https://placehold.co/50x50/2088ff/ffffff?text=DEVOPS" alt="DevOps">
                     </div>
                     <span class="tool-name">DevOps</span>
                     <div class="tool-experience">2+ лет</div>
