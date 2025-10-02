@@ -2210,4 +2210,984 @@ body {
     }
 }
 
+/* Блог в стиле темы */
+.blog-hero-section {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            radial-gradient(circle at 20% 30%, rgba(143, 188, 143, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(74, 124, 89, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.blog-posts-section {
+    background: var(--warm-white);
+    position: relative;
+}
+
+/* Instagram-стиль сетка */
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+@media (max-width: 768px) {
+    .instagram-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .instagram-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+/* Карточка поста */
+.instagram-post {
+    background: var(--warm-white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(74, 124, 89, 0.08);
+    transition: all 0.3s ease;
+}
+
+.instagram-post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(74, 124, 89, 0.15);
+}
+
+/* Контейнер изображения */
+.post-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1; /* Квадратное соотношение */
+    overflow: hidden;
+    border-radius: 20px 20px 0 0;
+}
+
+.post-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-decoration: none;
+}
+
+.post-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.instagram-post:hover .post-image {
+    transform: scale(1.05);
+}
+
+/* Плейсхолдер для постов без изображения */
+.post-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--light-green), var(--primary-green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    opacity: 0.7;
+}
+
+/* Оверлей с метаданными */
+.post-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+            to bottom,
+            rgba(74, 124, 89, 0.8) 0%,
+            transparent 30%,
+            transparent 70%,
+            rgba(74, 124, 89, 0.8) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+}
+
+.instagram-post:hover .post-overlay {
+    opacity: 1;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.post-meta span {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.post-meta i {
+    margin-right: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Контейнер заголовка */
+.post-title-container {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.post-title {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.post-title a {
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+    display: block;
+}
+
+.post-title a:hover {
+    color: var(--primary-green);
+}
+
+.post-category {
+    display: inline-block;
+    background: var(--primary-green);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Сообщение об отсутствии постов */
+.no-posts-message {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, rgba(143, 188, 143, 0.05), rgba(74, 124, 89, 0.08));
+    border-radius: 25px;
+    margin: 2rem 0;
+}
+
+.no-posts-content i {
+    font-size: 4rem;
+    color: var(--light-green);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+}
+
+.no-posts-content h3 {
+    color: var(--primary-green);
+    font-family: 'Comfortaa', cursive;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.no-posts-content p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Пагинация в стиле темы */
+.blog-pagination-wrapper {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.blog-pagination .page-numbers {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 20px;
+    margin: 0 8px;
+    background: var(--warm-white);
+    border: 2px solid var(--light-green);
+    color: var(--primary-green);
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 50px;
+    justify-content: center;
+}
+
+.blog-pagination .page-numbers:hover,
+.blog-pagination .page-numbers.current {
+    background: var(--primary-green);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74, 124, 89, 0.3);
+}
+
+.blog-pagination .page-numbers i {
+    font-size: 0.9rem;
+}
+
+.blog-pagination .prev i {
+    margin-right: 0.5rem;
+}
+
+.blog-pagination .next i {
+    margin-left: 0.5rem;
+}
+
+/* Анимации загрузки */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.instagram-post {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.instagram-post:nth-child(1) { animation-delay: 0.1s; }
+.instagram-post:nth-child(2) { animation-delay: 0.2s; }
+.instagram-post:nth-child(3) { animation-delay: 0.3s; }
+.instagram-post:nth-child(4) { animation-delay: 0.4s; }
+.instagram-post:nth-child(5) { animation-delay: 0.5s; }
+.instagram-post:nth-child(6) { animation-delay: 0.6s; }
+.instagram-post:nth-child(7) { animation-delay: 0.7s; }
+.instagram-post:nth-child(8) { animation-delay: 0.8s; }
+.instagram-post:nth-child(9) { animation-delay: 0.9s; }
+
+/* Декоративные элементы */
+.blog-posts-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            radial-gradient(circle at 10% 20%, rgba(143, 188, 143, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 90% 80%, rgba(135, 206, 235, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Адаптивные улучшения */
+@media (max-width: 768px) {
+    .post-title {
+        font-size: 1rem;
+    }
+
+    .post-title-container {
+        padding: 1rem;
+    }
+
+    .post-meta {
+        font-size: 0.8rem;
+    }
+
+    .blog-pagination .page-numbers {
+        padding: 10px 16px;
+        margin: 0 4px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .instagram-grid {
+        gap: 1rem;
+    }
+
+    .post-title {
+        font-size: 0.95rem;
+    }
+
+    .blog-pagination .page-numbers {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Анимированный фон для блога */
+.blog-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="30" r="2" fill="%234a7c59" opacity="0.4"/><circle cx="80" cy="20" r="1.5" fill="%238fbc8f" opacity="0.3"/><circle cx="60" cy="70" r="1" fill="%2387ceeb" opacity="0.5"/></svg>');
+    background-size: 300px 300px;
+    animation: blog-float 25s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.blog-posts-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><g opacity="0.1"><circle cx="50" cy="50" r="3" fill="%234a7c59"/><circle cx="150" cy="80" r="2" fill="%238fbc8f"/><circle cx="100" cy="150" r="2.5" fill="%2387ceeb"/></g></svg>');
+    background-size: 400px 400px;
+    animation: blog-drift 30s linear infinite reverse;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Плавающие элементы для блога */
+.blog-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.blog-floating-item {
+    position: absolute;
+    opacity: 0.6;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+/* Плавающие иконки */
+.floating-pen {
+    top: 15%;
+    left: 10%;
+    font-size: 1.5rem;
+    color: var(--primary-green);
+    animation: float-gentle 8s infinite;
+}
+
+.floating-book {
+    top: 25%;
+    right: 15%;
+    font-size: 1.2rem;
+    color: var(--soft-brown);
+    animation: float-gentle 10s infinite reverse;
+    animation-delay: 2s;
+}
+
+.floating-heart {
+    top: 60%;
+    left: 8%;
+    font-size: 1rem;
+    color: #ffb6c1;
+    animation: pulse-float 6s infinite;
+    animation-delay: 1s;
+}
+
+.floating-star {
+    top: 70%;
+    right: 20%;
+    font-size: 0.8rem;
+    color: #ffd700;
+    animation: twinkle 4s infinite;
+    animation-delay: 3s;
+}
+
+.floating-leaf {
+    top: 40%;
+    right: 5%;
+    font-size: 1.3rem;
+    color: var(--light-green);
+    animation: sway-float 12s infinite;
+}
+
+.floating-cloud {
+    top: 10%;
+    left: 50%;
+    font-size: 2rem;
+    color: var(--accent-blue);
+    opacity: 0.3;
+    animation: drift-slow 20s infinite;
+}
+
+/* Дополнительные элементы для постов */
+.floating-code {
+    top: 80%;
+    left: 15%;
+    font-size: 1.1rem;
+    color: var(--primary-green);
+    animation: code-bounce 7s infinite;
+    animation-delay: 4s;
+}
+
+.floating-music {
+    top: 35%;
+    left: 75%;
+    font-size: 1rem;
+    color: #9370db;
+    animation: music-wave 5s infinite;
+    animation-delay: 2.5s;
+}
+
+/* Анимации */
+@keyframes blog-float {
+    0% { transform: translateX(0px) translateY(0px) rotate(0deg); }
+    33% { transform: translateX(30px) translateY(-20px) rotate(120deg); }
+    66% { transform: translateX(-20px) translateY(15px) rotate(240deg); }
+    100% { transform: translateX(0px) translateY(0px) rotate(360deg); }
+}
+
+@keyframes blog-drift {
+    0% { transform: translateX(0px) translateY(0px); }
+    25% { transform: translateX(20px) translateY(-15px); }
+    50% { transform: translateX(-15px) translateY(10px); }
+    75% { transform: translateX(25px) translateY(5px); }
+    100% { transform: translateX(0px) translateY(0px); }
+}
+
+@keyframes float-gentle {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+@keyframes pulse-float {
+    0%, 100% { transform: scale(1) translateY(0px); opacity: 0.6; }
+    50% { transform: scale(1.2) translateY(-10px); opacity: 0.8; }
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.3) rotate(180deg); }
+}
+
+@keyframes sway-float {
+    0%, 100% { transform: rotate(-10deg) translateY(0px); }
+    25% { transform: rotate(5deg) translateY(-8px); }
+    50% { transform: rotate(-5deg) translateY(-15px); }
+    75% { transform: rotate(10deg) translateY(-8px); }
+}
+
+@keyframes drift-slow {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    50% { transform: translateX(30px) translateY(-10px); }
+}
+
+@keyframes code-bounce {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    25% { transform: translateY(-5px) scale(1.1); }
+    50% { transform: translateY(-10px) scale(1); }
+    75% { transform: translateY(-5px) scale(0.95); }
+}
+
+@keyframes music-wave {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    25% { transform: translateY(-8px) rotate(-10deg); }
+    50% { transform: translateY(-12px) rotate(0deg); }
+    75% { transform: translateY(-8px) rotate(10deg); }
+}
+
+/* Дополнительные декоративные элементы */
+.blog-decoration {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.blog-leaf-1 {
+    top: 20%;
+    left: 5%;
+    width: 40px;
+    height: 40px;
+    background: var(--light-green);
+    border-radius: 0 100% 0 100%;
+    opacity: 0.2;
+    animation: gentle-sway 8s ease-in-out infinite;
+}
+
+.blog-leaf-2 {
+    top: 70%;
+    right: 10%;
+    width: 30px;
+    height: 30px;
+    background: var(--primary-green);
+    border-radius: 50% 0 50% 0;
+    opacity: 0.15;
+    animation: gentle-sway 6s ease-in-out infinite reverse;
+}
+
+.blog-sparkle-1 {
+    top: 30%;
+    right: 30%;
+    width: 20px;
+    height: 20px;
+    background: #ffd700;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: sparkle-pulse 4s ease-in-out infinite;
+}
+
+.blog-sparkle-2 {
+    top: 80%;
+    left: 40%;
+    width: 15px;
+    height: 15px;
+    background: #87ceeb;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: sparkle-pulse 5s ease-in-out infinite;
+    animation-delay: 2s;
+}
+
+@keyframes gentle-sway {
+    0%, 100% { transform: rotate(0deg) translateY(0px); }
+    50% { transform: rotate(10deg) translateY(-5px); }
+}
+
+@keyframes sparkle-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.5); opacity: 0.7; }
+}
+
+/* Адаптивность - скрываем анимации на мобилках для производительности */
+@media (max-width: 768px) {
+    .blog-floating-elements,
+    .blog-decoration {
+        display: none;
+    }
+
+    .blog-hero-section::before,
+    .blog-posts-section::before {
+        animation-duration: 40s; /* Замедляем на мобилках */
+    }
+}
+
+/* Страница отдельного поста */
+.post-hero-section {
+    background: linear-gradient(135deg, #f8fdf8 0%, #f0f8f0 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 100px 0 60px;
+}
+
+.post-hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            radial-gradient(circle at 15% 25%, rgba(143, 188, 143, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 85% 75%, rgba(135, 206, 235, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.post-header {
+    position: relative;
+    z-index: 2;
+}
+
+.post-category-badge {
+    display: inline-block;
+    background: var(--primary-green);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+}
+
+.post-main-title {
+    font-family: 'Comfortaa', cursive;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    line-height: 1.3;
+}
+
+.post-meta-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.post-meta-info span {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(74, 124, 89, 0.1);
+}
+
+.post-meta-info i {
+    color: var(--primary-green);
+}
+
+/* Плавающие элементы для поста */
+.post-floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-feather {
+    top: 20%;
+    left: 10%;
+    font-size: 1.8rem;
+    color: var(--light-green);
+    opacity: 0.4;
+    animation: gentle-float 10s ease-in-out infinite;
+}
+
+.floating-heart-post {
+    top: 30%;
+    right: 15%;
+    font-size: 1.2rem;
+    color: #ffb6c1;
+    opacity: 0.5;
+    animation: pulse-gentle 8s ease-in-out infinite;
+    animation-delay: 2s;
+}
+
+.floating-star-post {
+    top: 70%;
+    left: 15%;
+    font-size: 1rem;
+    color: #ffd700;
+    opacity: 0.4;
+    animation: twinkle-soft 6s ease-in-out infinite;
+    animation-delay: 4s;
+}
+
+/* Секция контента */
+.post-content-section {
+    background: var(--warm-white);
+    position: relative;
+}
+
+.post-content-card {
+    background: white;
+    border-radius: 25px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(74, 124, 89, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.post-content-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-green), var(--light-green), var(--accent-blue));
+    border-radius: 25px 25px 0 0;
+}
+
+/* Стили для контента поста */
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    font-family: 'Comfortaa', cursive;
+    color: var(--primary-green);
+    margin: 2rem 0 1rem 0;
+    font-weight: 600;
+}
+
+.post-content h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--light-green);
+    padding-bottom: 0.5rem;
+}
+
+.post-content h3 {
+    font-size: 1.5rem;
+}
+
+.post-content p {
+    margin-bottom: 1.5rem;
+}
+
+.post-content a {
+    color: var(--primary-green);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.post-content a:hover {
+    color: var(--primary-green);
+    border-bottom-color: var(--light-green);
+}
+
+.post-content blockquote {
+    background: linear-gradient(135deg, rgba(143, 188, 143, 0.1), rgba(135, 206, 235, 0.08));
+    border-left: 4px solid var(--primary-green);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    border-radius: 0 15px 15px 0;
+    font-style: italic;
+    position: relative;
+}
+
+.post-content blockquote::before {
+    content: '"';
+    font-size: 4rem;
+    color: var(--light-green);
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    font-family: serif;
+}
+
+.post-content ul,
+.post-content ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+}
+
+.post-content li {
+    margin-bottom: 0.5rem;
+}
+
+.post-content code {
+    background: var(--cream);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    color: var(--primary-green);
+}
+
+.post-content pre {
+    background: var(--text-dark);
+    color: var(--warm-white);
+    padding: 1.5rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 2rem 0;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    margin: 2rem 0;
+    box-shadow: 0 10px 30px rgba(74, 124, 89, 0.15);
+}
+
+/* Теги */
+.post-tags {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(143, 188, 143, 0.3);
+}
+
+.tags-title {
+    color: var(--primary-green);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.tags-list a {
+    display: inline-block;
+    background: var(--light-green);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin: 0 8px 8px 0;
+    transition: all 0.3s ease;
+}
+
+.tags-list a:hover {
+    background: var(--primary-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 124, 89, 0.3);
+}
+
+/* Навигация между постами */
+.post-navigation {
+    margin: 3rem 0;
+}
+
+.nav-post {
+    display: block;
+    background: white;
+    border: 2px solid var(--light-green);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-bottom: 1rem;
+}
+
+.nav-post:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(74, 124, 89, 0.15);
+}
+
+.nav-direction {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+}
+
+.nav-title {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+.nav-next {
+    text-align: right;
+}
+
+/* Кнопка "Назад к блогу" */
+.back-to-blog {
+    margin-top: 3rem;
+}
+
+.btn-back-blog {
+    display: inline-flex;
+    align-items: center;
+    background: var(--primary-green);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(74, 124, 89, 0.3);
+}
+
+.btn-back-blog:hover {
+    background: var(--text-dark);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(74, 124, 89, 0.4);
+}
+
+/* Анимации */
+@keyframes gentle-float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+@keyframes pulse-gentle {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+@keyframes twinkle-soft {
+    0%, 100% { opacity: 0.4; transform: rotate(0deg); }
+    50% { opacity: 0.8; transform: rotate(180deg); }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .post-main-title {
+        font-size: 2rem;
+    }
+
+    .post-content-card {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+    }
+
+    .post-meta-info {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .post-meta-info span {
+        justify-content: center;
+    }
+
+    .post-floating-elements {
+        display: none;
+    }
+
+    .nav-post {
+        padding: 1rem;
+    }
+
+    .nav-next {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-main-title {
+        font-size: 1.8rem;
+    }
+
+    .post-content {
+        font-size: 1rem;
+    }
+
+    .post-content-card {
+        padding: 1.5rem 1rem;
+    }
+}
 
