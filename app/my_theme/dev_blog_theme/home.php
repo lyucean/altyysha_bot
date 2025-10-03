@@ -109,8 +109,8 @@
                     echo paginate_links(array(
                             'total' => $posts_query->max_num_pages,
                             'current' => $paged,
-                            'prev_text' => '<i class="fas fa-chevron-left"></i> <span>Назад</span>',
-                            'next_text' => '<span>Вперёд</span> <i class="fas fa-chevron-right"></i>',
+                            'prev_text' => '<span>Назад</span>',
+                            'next_text' => '<span>Вперёд</span> ',
                             'type' => 'list',
                             'show_all' => false,
                             'end_size' => 1,
