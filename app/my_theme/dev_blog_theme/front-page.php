@@ -363,10 +363,10 @@
                         над мультиками и гордится этим.
                     </p>
                     <div class="hobby-tags">
-                        <span class="hobby-tag">Наруто-бегу</span>
+                        <span class="hobby-tag">Наруто</span>
                         <span class="hobby-tag">Миядзаки ♥</span>
-                        <span class="hobby-tag">Титаны атакуют</span>
-                        <span class="hobby-tag">Лайт Ягами</span>
+                        <span class="hobby-tag">Атака титанов</span>
+                        <span class="hobby-tag">Унесенные ветром</span>
                     </div>
                 </div>
             </div>
